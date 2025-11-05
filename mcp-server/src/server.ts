@@ -1,5 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import express, { Request, Response } from "express";
 import { z } from "zod";
@@ -197,7 +198,7 @@ app.use(express.json());
 app.post("/mcp", async (req: Request, res: Response) => {
   const transport = new StreamableHTTPServerTransport({ 
     enableJsonResponse: true,
-    sessionIdGenerator: () => Math.random().toString(36).substring(7)
+    sessionIdGenerator: () => randomUUID()
   });
   res.on("close", () => transport.close());
   await server.connect(transport);
