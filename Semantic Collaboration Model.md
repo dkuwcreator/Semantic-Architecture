@@ -25,8 +25,8 @@ Semantic Modules are designed for **shared cognition** — where humans and AI s
 They do this by co-locating:
 
 * the **code** (behavior),
-* the **instructions** (`AGENT_INSTRUCTION.md`), and
-* the **explanation** (`README.md`)
+* the **instructions** (`semantic-instructions.md`), and
+* the **explanation** (`about.md`)
 
 This unified context ensures that changes are **interpretable** and **reversible**, preserving meaning across human and machine contributions.
 
@@ -86,10 +86,10 @@ When gravity increases beyond comprehension, the module should be **split** into
 
 Introduce automated validation tools to enforce structure and meaning:
 
-* Ensure all modules contain `README.md` and `AGENT_INSTRUCTION.md`.
+* Ensure all modules contain `about.md` and `semantic-instructions.md`.
 * Check for consistency between documented and actual function names.
 * Detect semantic drift between documentation and implementation.
-* Validate references in `AGENT_INSTRUCTION.md` against existing modules.
+* Validate references in `semantic-instructions.md` against existing modules.
 
 **Purpose:** Keep semantics synchronized with code automatically.
 
@@ -108,7 +108,7 @@ This enables:
 * Impact assessment for changes,
 * Smarter AI agent reasoning based on relational context.
 
-You can derive this graph directly from `AGENT_INSTRUCTION.md` references.
+You can derive this graph directly from `semantic-instructions.md` references.
 
 ---
 
@@ -133,7 +133,7 @@ AI agents use this to learn patterns of past changes and understand design evolu
 Replace traditional line-based reviews with **semantic reviews**.
 AI agents (or humans) compare:
 
-* what was *intended* (from `AGENT_INSTRUCTION.md`), and
+* what was *intended* (from `semantic-instructions.md`), and
 * what was *implemented* (from the code).
 
 Semantic diff tools can summarize changes in terms of *capability*, *intent*, or *scope*, e.g.:
@@ -161,7 +161,7 @@ Each role operates within the **smallest possible context** that contains the ch
 ### 4.2 Collaboration Protocol
 
 **1. Perception:**
-Agent reads local context — `README.md`, `AGENT_INSTRUCTION.md`, code, and tests.
+Agent reads local context — `about.md`, `semantic-instructions.md`, code, and tests.
 
 **2. Reasoning:**
 Determines the change required, infers implications, and assesses semantic gravity.
@@ -170,7 +170,7 @@ Determines the change required, infers implications, and assesses semantic gravi
 Modifies code while preserving documentation and structure.
 
 **4. Reflection:**
-Updates `AGENT_INSTRUCTION.md` and tests to reflect new behavior.
+Updates `semantic-instructions.md` and tests to reflect new behavior.
 
 **5. Verification:**
 Runs tests and semantic validation tools.

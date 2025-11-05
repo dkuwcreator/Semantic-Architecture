@@ -41,8 +41,8 @@ Each layer defines a **cognitive boundary** — a space where code, documentatio
 * Small, self-contained, **flat units** of functionality
 * Include both code and meaning:
 
-  * `README.md` — for humans
-  * `AGENT_INSTRUCTION.md` — for AI
+  * `about.md` — for humans
+  * `semantic-instructions.md` — for AI
 * Small enough for one person or agent to fully understand
 * The atomic unit of **safe AI collaboration**
 

@@ -71,7 +71,7 @@ It’s not just code — it’s a **cohesive, documented, and interpretable unit
 
 * executable logic,
 * local tests, and
-* self-describing documentation (`README.md` + `AGENT_INSTRUCTION.md`).
+* self-describing documentation (`about.md` + `semantic-instructions.md`).
 
 Its defining property is **bounded cognition** — it’s small enough for one human or AI agent to fully understand and reason about in isolation.
 
@@ -148,7 +148,7 @@ Because every layer of the Semantic Architecture is self-describing, it can also
 Periodic “semantic maintenance agents” can:
 
 * Scan all modules for drift between code and documentation.
-* Update `AGENT_INSTRUCTION.md` automatically when functions change.
+* Update `semantic-instructions.md` automatically when functions change.
 * Split large modules into smaller ones when cognitive scope grows.
 
 The result is a living, evolving system — one that preserves its meaning over time.
