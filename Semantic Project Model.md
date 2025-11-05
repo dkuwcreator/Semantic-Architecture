@@ -39,11 +39,11 @@ By ensuring that every piece of the system — from a project to its smallest un
 
 The Semantic Project Model defines three conceptual layers:
 
-| Level                | Purpose                                               | Scope                  | Primary Documentation               |
-| -------------------- | ----------------------------------------------------- | ---------------------- | ----------------------------------- |
-| **Project**          | The complete software system or application           | Repository root        | `README.md`, `AGENT_INSTRUCTION.md` |
-| **Semantic Cluster** | A cohesive grouping of related functionality          | Subdomain or subsystem | `AGENT_INSTRUCTION.md`              |
-| **Semantic Module**  | The smallest, self-contained unit of code and meaning | File set               | `README.md`, `AGENT_INSTRUCTION.md` |
+| Level                | Purpose                                               | Scope                  | Primary Documentation                       |
+| -------------------- | ----------------------------------------------------- | ---------------------- | ------------------------------------------- |
+| **Project**          | The complete software system or application           | Repository root        | `about.md`, `semantic-instructions.md`      |
+| **Semantic Cluster** | A cohesive grouping of related functionality          | Subdomain or subsystem | `about.md`, `semantic-instructions.md`      |
+| **Semantic Module**  | The smallest, self-contained unit of code and meaning | File set               | `about.md`, `semantic-instructions.md`      |
 
 Each layer is a **cognitive boundary** — a distinct level at which reasoning, modification, and validation can occur.
 
@@ -60,22 +60,24 @@ It is typically represented by a repository.
 
 * Represents an independently maintainable deliverable.
 * Contains multiple **Semantic Clusters**.
-* Provides a system-level `AGENT_INSTRUCTION.md` to define goals, interactions, and external interfaces.
+* Provides a system-level `semantic-instructions.md` to define goals, interactions, and external interfaces.
 * May include configuration, shared resources, or deployment artifacts.
 
 ### Example Structure
 
 ```
 project-user-service/
-├── README.md
-├── AGENT_INSTRUCTION.md
+├── about.md
+├── semantic-instructions.md
 ├── cluster-auth/
-│   ├── AGENT_INSTRUCTION.md
+│   ├── about.md
+│   ├── semantic-instructions.md
 │   ├── jwt_tools.py
 │   ├── token_validator.py
 │   └── test_auth.py
 ├── cluster-storage/
-│   ├── AGENT_INSTRUCTION.md
+│   ├── about.md
+│   ├── semantic-instructions.md
 │   ├── blob_manager.py
 │   ├── cleanup_scheduler.py
 │   └── test_storage.py
@@ -94,7 +96,7 @@ A **Semantic Cluster** groups multiple **Semantic Modules** that together delive
 
 * Represents a **bounded domain** within a project.
 * Contains multiple Semantic Modules and optional shared resources.
-* Provides its own `AGENT_INSTRUCTION.md` describing:
+* Provides its own `semantic-instructions.md` describing:
 
   * The cluster’s purpose.
   * Relationships between modules.
@@ -105,7 +107,8 @@ A **Semantic Cluster** groups multiple **Semantic Modules** that together delive
 
 ```
 cluster-auth/
-├── AGENT_INSTRUCTION.md
+├── about.md
+├── semantic-instructions.md
 ├── jwt_tools.py
 ├── token_validator.py
 ├── key_cache.py
@@ -132,8 +135,8 @@ It encapsulates **code, documentation, tests, and AI guidance** in one flat cont
 * Represents one clear concept, function, or feature.
 * Must include:
 
-  * `README.md` — human-readable purpose and usage.
-  * `AGENT_INSTRUCTION.md` — AI-readable structure and behavioral contract.
+  * `about.md` — human-readable purpose and usage.
+  * `semantic-instructions.md` — AI-readable structure and behavioral contract.
 * May include additional scripts, configuration, or metadata.
 * Must remain flat — no subdirectories.
 * Should remain *small enough* that a human or AI agent can fully understand and reason about it in isolation.
@@ -147,12 +150,42 @@ It encapsulates **code, documentation, tests, and AI guidance** in one flat cont
 
 ## 7. Documentation Roles
 
-| File                   | Purpose                                                                                              | Target Audience               |
-| ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `README.md`            | Human-facing overview, usage examples, context                                                       | Developers, reviewers         |
-| `AGENT_INSTRUCTION.md` | Machine-oriented guide describing purpose, inputs, outputs, modification rules, and validation steps | AI agents, automation systems |
+| File                       | Purpose                                                                                              | Target Audience               |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `about.md`                 | Human-facing overview, usage examples, context                                                       | Developers, reviewers         |
+| `semantic-instructions.md` | Machine-oriented guide describing purpose, inputs, outputs, modification rules, and validation steps | AI agents, automation systems |
 
 Both files are **semantic anchors** — they ensure that knowledge remains co-located with the implementation.
+
+### `semantic-instructions.md` Format
+
+Each `semantic-instructions.md` file should start with **YAML front matter** to declare scope and semantic metadata:
+
+```markdown
+---
+scope: module           # project | cluster | module
+id: jwt-tools
+name: JWT Tools
+owners: ["@derk"]
+contract:
+  invariants:
+    - "Reject expired tokens"
+    - "Support RSA key rotation"
+validation:
+  tests: ["test_jwt_tools.py::test_rotation"]
+change_policy:
+  allowed_changes: ["bugfix", "refactor-safe"]
+  escalation: "If invariants change, escalate to cluster"
+---
+```
+
+Followed by detailed instructions for AI agents.
+
+This front matter enables:
+- **Schema validation**: Ensure all required fields are present
+- **CI checks**: Automate validation of semantic contracts
+- **Tooling integration**: Parse and understand module boundaries programmatically
+- **Change impact analysis**: Track when invariants or contracts are modified
 
 ---
 

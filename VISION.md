@@ -71,7 +71,7 @@ It’s not just code — it’s a **cohesive, documented, and interpretable unit
 
 * executable logic,
 * local tests, and
-* self-describing documentation (`README.md` + `AGENT_INSTRUCTION.md`).
+* self-describing documentation (`about.md` + `semantic-instructions.md`).
 
 Its defining property is **bounded cognition** — it’s small enough for one human or AI agent to fully understand and reason about in isolation.
 
