@@ -145,8 +145,8 @@ This applies automatically when Copilot works in your repository.
 To share the MCP server with your team:
 
 ```bash
-# Build and tag
-docker build -t ghcr.io/YOUR_ORG/semantic-architecture-mcp:0.1.0 ./mcp-server
+# Build and tag (build from repo root with -f flag)
+docker build -f mcp-server/Dockerfile -t ghcr.io/YOUR_ORG/semantic-architecture-mcp:0.1.0 .
 
 # Login to GitHub Container Registry
 echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin

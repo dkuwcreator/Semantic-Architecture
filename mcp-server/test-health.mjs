@@ -29,6 +29,9 @@ const req = http.request(url, options, (res) => {
   });
   
   res.on('end', () => {
+    // Accept 200 (OK) and 400 (Bad Request) as successful responses.
+    // 400 is considered a success here because the server may respond with 400 for invalid requests,
+    // but this still proves the server is alive and processing requests.
     if (res.statusCode === 200 || res.statusCode === 400) {
       console.log('✓ Server is responding');
       process.exit(0);

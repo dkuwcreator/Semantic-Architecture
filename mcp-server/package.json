@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -p .",
+    "build": "tsc -p . && sh add-shebang.sh",
     "start": "node dist/server.js"
   },
   "dependencies": {
@@ -16,7 +16,6 @@
     "@modelcontextprotocol/sdk": "^1.21.0",
     "express": "^4.19.2",
     "glob": "^11.0.0",
-    "gray-matter": "^4.0.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {

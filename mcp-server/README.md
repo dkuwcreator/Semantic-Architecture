@@ -51,8 +51,8 @@ Create a `.vscode/mcp.json` file in your workspace:
 ### Using with Docker
 
 ```bash
-# Build the Docker image
-docker build -t semantic-architecture-mcp:latest .
+# Build the Docker image (from repository root)
+docker build -f mcp-server/Dockerfile -t semantic-architecture-mcp:latest .
 
 # Run the container
 docker run --rm -p 3000:3000 semantic-architecture-mcp:latest
@@ -63,8 +63,8 @@ docker run --rm -p 3000:3000 semantic-architecture-mcp:latest
 To publish to GitHub Container Registry:
 
 ```bash
-# Build and tag
-docker build -t ghcr.io/dkuwcreator/semantic-architecture-mcp:0.1.0 .
+# Build and tag (from repository root)
+docker build -f mcp-server/Dockerfile -t ghcr.io/dkuwcreator/semantic-architecture-mcp:0.1.0 .
 
 # Push to registry
 docker push ghcr.io/dkuwcreator/semantic-architecture-mcp:0.1.0

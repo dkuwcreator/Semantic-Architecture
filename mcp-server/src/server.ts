@@ -5,15 +5,20 @@ import fs from "node:fs/promises";
 import express, { Request, Response } from "express";
 import { z } from "zod";
 import { glob } from "glob";
-import matter from "gray-matter";
 
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 
-/** Basic config: assume server lives at repo/mcp-server and repo root is up one level */
+/**
+ * Determines the repository root directory.
+ * If the REPO_ROOT environment variable is set (e.g., by Dockerfile), use it.
+ * Otherwise, assumes this file is at repo/mcp-server/src/server.ts and sets REPO_ROOT two levels up.
+ */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const REPO_ROOT = path.resolve(path.join(__dirname, "..", ".."));
+const REPO_ROOT = process.env.REPO_ROOT
+  ? path.resolve(process.env.REPO_ROOT)
+  : path.resolve(path.join(__dirname, "..", ".."));
 
 function md(pathRel: string) {
   return path.join(REPO_ROOT, pathRel);
@@ -67,13 +72,6 @@ server.registerTool(
     description: "Infer Project → Cluster → Module hierarchy from repo folders",
     inputSchema: {
       root: z.string().optional().describe("Relative path to scan, default '.'")
-    },
-    outputSchema: {
-      project: z.string(),
-      clusters: z.array(z.object({
-        name: z.string(),
-        modules: z.array(z.string())
-      }))
     }
   },
   async ({ root }) => {
@@ -115,15 +113,6 @@ server.registerTool(
     description: "Ensure each module folder contains about.md and semantic-instructions.md",
     inputSchema: {
       root: z.string().optional()
-    },
-    outputSchema: {
-      ok: z.boolean(),
-      modules: z.array(z.object({
-        path: z.string(),
-        hasAbout: z.boolean(),
-        hasInstructions: z.boolean()
-      })),
-      missing: z.array(z.object({ path: z.string(), missing: z.array(z.string()) }))
     }
   },
   async ({ root }) => {
@@ -168,8 +157,7 @@ server.registerTool(
     inputSchema: {
       name: z.string(),
       cluster: z.string().optional().describe("Optional cluster name")
-    },
-    outputSchema: { path: z.string() }
+    }
   },
   async ({ name, cluster }) => {
     const base = cluster
