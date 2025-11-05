@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "semantic-architecture": {
+      "type": "http",
+      "url": "http://localhost:3000/mcp",
+      "description": "Semantic Architecture MCP Server - Provides resources and tools for semantic project management"
+    }
+  }
+}
