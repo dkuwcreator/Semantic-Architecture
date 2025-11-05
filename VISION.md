@@ -148,7 +148,7 @@ Because every layer of the Semantic Architecture is self-describing, it can also
 Periodic “semantic maintenance agents” can:
 
 * Scan all modules for drift between code and documentation.
-* Update `AGENT_INSTRUCTION.md` automatically when functions change.
+* Update `semantic-instructions.md` automatically when functions change.
 * Split large modules into smaller ones when cognitive scope grows.
 
 The result is a living, evolving system — one that preserves its meaning over time.
