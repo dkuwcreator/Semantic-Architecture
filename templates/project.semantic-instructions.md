@@ -47,11 +47,13 @@ This project level encompasses the entire semantic architecture vision and metho
 ## Documentation Standards
 
 ### Human-Facing Documentation (`about.md`)
+
 - Clear, minimal, and developer-friendly
 - Used at all levels: Project, Cluster, Module
 - Provides overview, context, and usage examples
 
 ### AI-Facing Instructions (`semantic-instructions.md`)
+
 - Consistent, automation-friendly structure
 - Includes YAML front matter with scope and metadata
 - Used at all levels: Project, Cluster, Module
@@ -80,6 +82,7 @@ This is a standalone documentation project with no external dependencies or inte
 ## Future Evolution
 
 This framework is designed to evolve based on:
+
 - Real-world implementation experiences
 - Community feedback and contributions
 - Advances in AI collaboration capabilities

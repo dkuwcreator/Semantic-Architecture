@@ -199,13 +199,13 @@ This turns maintenance into a *continuous, self-healing process* rather than a p
 
 Every agent or human contribution should include **semantic context** in commit messages:
 
-```
+```txt
 [cluster-name/module-name] <summary>
 ```
 
 Example:
 
-```
+```txt
 [auth/jwt_tools] Add support for RSA key rotation
 ```
 

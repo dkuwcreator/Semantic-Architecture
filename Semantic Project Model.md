@@ -65,7 +65,7 @@ It is typically represented by a repository.
 
 ### Example Structure
 
-```
+```txt
 project-user-service/
 ├── about.md
 ├── semantic-instructions.md
@@ -182,10 +182,11 @@ change_policy:
 Followed by detailed instructions for AI agents.
 
 This front matter enables:
-- **Schema validation**: Ensure all required fields are present
-- **CI checks**: Automate validation of semantic contracts
-- **Tooling integration**: Parse and understand module boundaries programmatically
-- **Change impact analysis**: Track when invariants or contracts are modified
+
+* **Schema validation**: Ensure all required fields are present
+* **CI checks**: Automate validation of semantic contracts
+* **Tooling integration**: Parse and understand module boundaries programmatically
+* **Change impact analysis**: Track when invariants or contracts are modified
 
 ---
 
