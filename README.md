@@ -107,3 +107,47 @@ Imagine a world where:
 > By designing code for cognition — not just computation —
 > we create systems that humans and AI can build, reason about,
 > and sustain together.
+
+---
+
+## 🔟 Using the MCP Server
+
+This repository includes a **Model Context Protocol (MCP) server** that exposes the Semantic Architecture framework to AI assistants like GitHub Copilot.
+
+### Quick Start
+
+1. **Start the MCP server**:
+   ```bash
+   cd mcp-server
+   npm install
+   npm run build
+   npm start
+   ```
+
+2. **Configure VS Code** with `.vscode/mcp.json`:
+   ```json
+   {
+     "servers": {
+       "semantic-architecture": {
+         "type": "http",
+         "url": "http://localhost:3000/mcp"
+       }
+     }
+   }
+   ```
+
+3. **Use in GitHub Copilot**:
+   - Access resources: Add context via MCP Resources (Vision, Collaboration Model, Project Model)
+   - Use tools: `semantic.map`, `semantic.validate`, `semantic.initModule`
+
+### Available Resources
+- **project-vision**: The VISION.md document
+- **collaboration-model**: Semantic Collaboration Model
+- **project-model**: Semantic Project Model
+
+### Available Tools
+- **semantic.map**: Build Project → Cluster → Module hierarchy
+- **semantic.validate**: Check module documentation completeness
+- **semantic.initModule**: Scaffold new semantic modules
+
+See [`mcp-server/README.md`](mcp-server/README.md) for detailed documentation.
