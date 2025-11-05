@@ -75,7 +75,18 @@ docker push ghcr.io/dkuwcreator/semantic-architecture-mcp:0.1.0
 ```bash
 # Watch mode for development
 npm run dev
+
+# Test server health
+node test-health.mjs
 ```
+
+## Testing
+
+To verify the server is working:
+
+1. Start the server: `npm start`
+2. In another terminal, run: `node test-health.mjs`
+3. You should see "✓ Server is responding"
 
 ## Configuration
 
