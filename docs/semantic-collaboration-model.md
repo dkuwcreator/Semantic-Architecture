@@ -11,9 +11,8 @@
 
 The **Semantic Collaboration Model** describes how humans and AI agents interact with, maintain, and evolve systems built on the **Semantic Project Model**.
 
-While the Semantic Project Model defines *structure* — projects, clusters, and modules — this model defines *behavior*:
+While the Semantic Project Model defines *structure* — projects, clusters, and modules — this model defines *behavior*: how AI agents and humans **use**, **interpret**, and **sustain** that structure over time.
 For structural specifications, schema definitions, and the three-layer hierarchy, see the companion [Semantic Project Model](semantic-project-model.md).
-how AI agents and humans **use**, **interpret**, and **sustain** that structure over time.
 
 The core idea is that every Semantic Module is a **bounded cognitive environment** — a unit small enough for an agent or human to fully understand, reason about, and modify safely.
 AI agents operate within these boundaries, guided by the semantics expressed in local documentation and reinforced by collaborative workflows.
@@ -227,8 +226,6 @@ If the change affects other modules, the agent escalates to the cluster level; o
 This creates a self-reinforcing, bounded loop — **Perception → Reasoning → Action → Reflection → Verification → Evolution** — ensuring changes remain semantically coherent and traceable.
 
 The same loop appears in the [Vision document](vision.md#45-evolution-through-understanding) as the foundation for autonomous system evolution, and is implemented here as a practical collaboration protocol.
-
-This creates a self-reinforcing, bounded loop — *Perception → Reasoning → Action → Reflection → Verification → Escalation* — ensuring changes remain semantically coherent.
 
 ---
 

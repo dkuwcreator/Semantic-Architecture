@@ -95,7 +95,8 @@ They read, reason, and act within the smallest scope that contains the problem:
 
 This mirrors how human teams work — specialists handle localized tasks, while architects maintain global coherence.
 The Semantic Architecture encodes this logic directly into the system.
-#### Semantic Stewardship
+
+### Semantic Stewardship
 
 Every Semantic Module and Cluster has a **semantic steward** — human or AI — responsible for maintaining its meaning, coherence, and intent.
 This stewardship creates a chain of accountability, ensuring that every component of the system has a guardian that protects its semantic integrity.
