@@ -320,11 +320,3 @@ def sample_glossary_entries():
             "category": "Development Practices"
         }
     ]
-
-
-# Configure pytest-asyncio
-def pytest_configure(config):
-    """Configure pytest with custom settings."""
-    config.addinivalue_line(
-        "markers", "asyncio: mark test as an async test"
-    )

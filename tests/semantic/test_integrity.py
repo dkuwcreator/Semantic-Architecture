@@ -5,7 +5,6 @@ behavior of the MCP server.
 """
 import pytest
 import json
-from pathlib import Path
 
 
 class TestSemanticConsistency:
@@ -14,8 +13,6 @@ class TestSemanticConsistency:
     @pytest.mark.semantic
     def test_graph_nodes_have_valid_types(self, mock_semantic_graph_output):
         """Test that all graph nodes have valid scopes."""
-        valid_scopes = ["module", "cluster", "project", "component", "service"]
-        
         for node in mock_semantic_graph_output["nodes"]:
             assert "scope" in node
             # In a real implementation, we'd enforce strict scopes
@@ -339,8 +336,8 @@ class TestErrorConditions:
             ValidationDiagnostic()
     
     @pytest.mark.semantic
-    def test_invalid_severity_level(self):
-        """Test handling of values in drift alerts."""
+    def test_drift_alert_field_values(self):
+        """Test that DriftAlert fields are set correctly when provided with typical values."""
         from mcp_server.models import DriftAlert
         
         # Model should accept any string values for fields

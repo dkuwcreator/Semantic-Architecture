@@ -4,7 +4,6 @@ Tests all HTTP endpoints of the MCP server to ensure they respond correctly
 and handle various request scenarios.
 """
 import pytest
-from fastapi.testclient import TestClient
 
 
 class TestRootEndpoints:

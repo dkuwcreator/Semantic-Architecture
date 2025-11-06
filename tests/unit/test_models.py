@@ -4,7 +4,6 @@ Tests the Pydantic models used in the MCP server to ensure proper validation
 and serialization/deserialization.
 """
 import pytest
-from pydantic import ValidationError
 
 from mcp_server.models import (
     SemanticNode,
@@ -272,4 +271,4 @@ class TestGlossaryEntry:
             definition="No category specified"
         )
         assert entry.term == "Uncategorized"
-        assert entry.category is None or entry.category == ""
+        assert entry.category is None

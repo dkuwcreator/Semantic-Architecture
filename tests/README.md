@@ -528,11 +528,11 @@ class TestSemanticNode:
         """Test creating a valid semantic node."""
         node = SemanticNode(
             id="test-node",
-            type="module",
+            scope="module",
             name="Test Module"
         )
         assert node.id == "test-node"
-        assert node.type == "module"
+        assert node.scope == "module"
 ```
 
 ## Coverage Goals

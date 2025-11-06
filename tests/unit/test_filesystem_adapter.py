@@ -2,12 +2,9 @@
 
 Tests the filesystem adapter that reads repository data and executes scripts.
 """
-import json
 import pytest
-from pathlib import Path
 
 from mcp_server.adapters import FilesystemAdapter
-from mcp_server.models import GlossaryEntry
 
 
 class TestFilesystemAdapter:
