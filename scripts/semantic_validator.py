@@ -72,7 +72,9 @@ def validate_module_structure(semantic_instructions_path: str, diags: List[Dict[
         if rel_path == ".":
             continue
         
-        # Count the depth: one level means one path separator
+        # Count the depth: number of path separators + 1
+        # 'docs' has 0 separators → depth 1 (allowed)
+        # 'docs/subdir' has 1 separator → depth 2 (not allowed)
         depth = rel_path.count(os.sep) + 1
         
         if depth > 1:
@@ -85,6 +87,7 @@ def validate_module_structure(semantic_instructions_path: str, diags: List[Dict[
             )
             # Report only once per module
             break
+
 
 
 
