@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # Test runner service
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: testing
+    container_name: semantic-mcp-test
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./mcp_server:/app/mcp_server:ro
+      - ./pytest.ini:/app/pytest.ini:ro
+      - test-results:/app/test-results
+      - coverage-reports:/app/htmlcov
+    environment:
+      - TESTING=true
+      - PYTHONPATH=/app
+      - CORS_ALLOW_ALL=false
+    command: >
+      sh -c "
+        pytest -v --tb=short --cov=mcp_server --cov-report=term-missing --cov-report=html:/app/htmlcov --cov-report=xml:/app/test-results/coverage.xml --junit-xml=/app/test-results/junit.xml &&
+        echo 'Test results saved to /app/test-results' &&
+        echo 'Coverage report saved to /app/htmlcov'
+      "
+    networks:
+      - test-network
+
+  # MCP Server for integration testing
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: semantic-mcp-server-test
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./mcp_server:/app/mcp_server:ro
+      - ./scripts:/app/scripts:ro
+      - ./docs:/app/docs:ro
+      - ./data:/app/data:ro
+    environment:
+      - CORS_ALLOW_ALL=true
+      - TESTING=true
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - test-network
+
+  # Integration test runner that waits for server
+  integration-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: testing
+    container_name: semantic-mcp-integration-test
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./mcp_server:/app/mcp_server:ro
+      - ./pytest.ini:/app/pytest.ini:ro
+      - test-results:/app/test-results
+    environment:
+      - TESTING=true
+      - PYTHONPATH=/app
+      - MCP_SERVER_URL=http://mcp-server:8000
+    depends_on:
+      mcp-server:
+        condition: service_healthy
+    command: >
+      sh -c "
+        echo 'Waiting for MCP server to be ready...' &&
+        sleep 5 &&
+        pytest tests/integration -v --tb=short -m integration --junit-xml=/app/test-results/integration-junit.xml
+      "
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge
+
+volumes:
+  test-results:
+  coverage-reports:
