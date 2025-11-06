@@ -132,6 +132,28 @@ The Semantic Architecture supports integration with:
 
 See [Semantic Project Model: Tooling Integration](docs/semantic-project-model.md#81-semantic-tooling-integration) for details.
 
+### 🌐 MCP Server (NEW)
+
+The **Semantic Architecture MCP Server** transforms this framework into a live semantic context provider:
+
+- **Live Semantic Context**: Real-time access to project structure, validation, and drift detection
+- **API Endpoints**: RESTful APIs for semantic graph, validation, glossary, and ADRs
+- **AI Integration**: Enables AI agents and tools to query semantic intelligence
+- **Deployment Ready**: Supports both local and Docker deployment
+
+**Quick Start:**
+```bash
+# Local deployment
+./start-local.sh
+
+# Docker deployment  
+./start-docker.sh dev
+```
+
+**Documentation:**
+- [MCP Server README](mcp_server/README.md) - API documentation and usage
+- [Deployment Guide](DEPLOYMENT.md) - Complete deployment instructions
+
 ---
 
 ## 📖 Version History
@@ -164,6 +186,8 @@ When contributing to this framework:
 - [Project Model](docs/semantic-project-model.md) — What is it made of?
 - [Collaboration Model](docs/semantic-collaboration-model.md) — How do we use it?
 - [Glossary](docs/glossary.md) — What do these terms mean?
+- [MCP Server](mcp_server/README.md) — Live semantic context API
+- [Deployment Guide](DEPLOYMENT.md) — Deploy locally or with Docker
 
 ---
 

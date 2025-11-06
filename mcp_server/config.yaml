@@ -1,0 +1,39 @@
+# MCP Server Configuration
+server:
+  host: "0.0.0.0"
+  port: 8000
+  reload: false
+  workers: 1
+
+# Repository paths
+repository:
+  root: "."
+  scripts: "scripts"
+  docs: "docs"
+  data: "data"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# CORS settings
+cors:
+  allow_origins:
+    - "*"  # Configure for production
+  allow_credentials: true
+  allow_methods:
+    - "*"
+  allow_headers:
+    - "*"
+
+# Script execution settings
+scripts:
+  timeout: 30
+  python_executable: "python3"
+
+# Cache settings (optional, for future implementation)
+cache:
+  enabled: false
+  ttl: 300
+  max_size: 100

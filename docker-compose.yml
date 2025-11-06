@@ -1,0 +1,63 @@
+# Docker Compose configuration for Semantic Architecture MCP Server
+version: '3.8'
+
+services:
+  # Development server with hot-reload
+  mcp-server-dev:
+    build:
+      context: .
+      target: development
+    container_name: semantic-mcp-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source code for hot-reload
+      - ./mcp_server:/app/mcp_server
+      - ./scripts:/app/scripts
+      - ./docs:/app/docs
+      - ./data:/app/data
+      - ./.github:/app/.github
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=DEBUG
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - semantic-net
+
+  # Production server (optimized)
+  mcp-server-prod:
+    build:
+      context: .
+      target: production
+    container_name: semantic-mcp-prod
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - semantic-net
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  semantic-net:
+    driver: bridge
