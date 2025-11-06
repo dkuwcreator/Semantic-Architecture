@@ -39,7 +39,7 @@ Purpose: Act within one Semantic Module where meaning is co-located (code, docs,
   - collaborationModel: ../../../docs/semantic-collaboration-model.md
   - glossary: ../../../docs/glossary.md
 - boundaries:
-  - Allowed: read/write only inside the target module directory (flat); edit about.md, semantic-instructions.md, local code, and tests.
+  - Allowed: read/write only inside the target module directory; edit about.md, semantic-instructions.md, local code, tests, and files within one level of subdirectories.
   - Forbidden: cross-module refactors; external network calls; writing outside module path.
 
 ## Operating guide

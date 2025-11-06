@@ -50,8 +50,40 @@ def validate_semantic_instructions_md(path: str, diags: List[Dict[str, Any]]):
             missing.append("owners")
         for m in missing:
             add_diag(diags, "error", "SI002", f"Missing required field '{m}' in front matter", path, 1, 1)
+        
+        # Check if this is a module scope
+        scope_match = re.search(r"\bscope:\s*(project|cluster|module)\b", fm)
+        if scope_match and scope_match.group(1) == "module":
+            # Validate module directory structure (one level of subdirectories allowed)
+            validate_module_structure(path, diags)
     except Exception as e:
         add_diag(diags, "error", "SI000", f"Failed to read: {e}", path)
+
+
+def validate_module_structure(semantic_instructions_path: str, diags: List[Dict[str, Any]]):
+    """Validate that module directory structure adheres to one-level subdirectory rule."""
+    module_dir = os.path.dirname(semantic_instructions_path)
+    
+    # List immediate subdirectories of the module directory
+    for entry in os.listdir(module_dir):
+        entry_path = os.path.join(module_dir, entry)
+        if os.path.isdir(entry_path):
+            # Check if this subdirectory contains any subdirectories
+            for subentry in os.listdir(entry_path):
+                subentry_path = os.path.join(entry_path, subentry)
+                if os.path.isdir(subentry_path):
+                    rel_path = os.path.relpath(subentry_path, module_dir)
+                    add_diag(
+                        diags,
+                        "error",
+                        "SI003",
+                        f"Module directory structure exceeds one level of nesting: {rel_path}. Modules may only contain one level of subdirectories.",
+                        semantic_instructions_path
+                    )
+                    # Report only once per module
+                    return
+
+
 
 
 def collect_targets(inputs: List[str]) -> List[str]:

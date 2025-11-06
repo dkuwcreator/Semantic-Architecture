@@ -3,7 +3,7 @@ mode: instructions
 ---
 
 # Purpose
-Create a new Semantic Module that is self-describing and safe to evolve. Meaning (docs and contract) precedes mechanics (code). Keep scope flat within the module directory; no subdirectories.
+Create a new Semantic Module that is self-describing and safe to evolve. Meaning (docs and contract) precedes mechanics (code). Module may contain one level of subdirectories for organization (e.g., /docs/, /scripts/) but no deeper nesting.
 
 > Metadata
 - id: scaffold-semantic-module
@@ -51,7 +51,7 @@ Validate required parameters before proceeding.
 - commitMessage: `docs(module): scaffold ${moduleName}`
 
 # Safety and constraints
-- Bounded context: Only operate within `{parentClusterPath}/{moduleName}/` (flat).
+- Bounded context: Only operate within `{parentClusterPath}/{moduleName}/`. May include one level of subdirectories.
 - Minimal diffs: Do not refactor existing modules.
 - Stewardship: Include `owners` in module docs; recommend ADR if introducing novel capabilities.
 
@@ -110,7 +110,7 @@ change_policy:
 ---
 
 Instructions for agents:
-- Operate only within this module directory (flat).
+- Operate within this module directory. May include one level of subdirectories for organization.
 - Keep changes minimal and update this file when contracts or interfaces change.
 - Ensure tests reflect each invariant.
 ```

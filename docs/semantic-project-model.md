@@ -163,17 +163,18 @@ cluster-auth/
 ### Definition
 
 A **Semantic Module** is the smallest self-contained, semantically complete unit.
-It encapsulates **code, documentation, tests, and AI guidance** in one flat context.
+It encapsulates **code, documentation, tests, and AI guidance** in one context.
 
 ### Characteristics
 
 * Represents one clear concept, function, or feature.
 * Must include:
 
-  * `about.md` — human-readable purpose and usage.
-  * `semantic-instructions.md` — AI-readable structure and behavioral contract.
+  * `about.md` — human-readable purpose and usage (must be at module root).
+  * `semantic-instructions.md` — AI-readable structure and behavioral contract (must be at module root).
 * May include additional scripts, configuration, or metadata.
-* Must remain flat — no subdirectories.
+* May contain one level of subdirectories (e.g., `/module/docs/`, `/module/scripts/`) but no deeper nesting is permitted.
+* All files within a module and its immediate subfolders must belong to the same semantic scope.
 * Should remain *small enough* that a human or AI agent can fully understand and reason about it in isolation.
 
 ### Cognitive Scope Guideline
@@ -242,11 +243,11 @@ This front matter enables:
 
 The Semantic Project Model is designed for **multi-scale AI reasoning**:
 
-| AI Action Scope                                           | Target Layer     | Agent Context                                                           |
-| --------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------- |
-| **Local optimization** (bug fix, refactor, feature tweak) | Semantic Module  | Operates within a single flat module using its documentation and tests. |
-| **Domain evolution** (e.g., add new capability)           | Semantic Cluster | Considers interactions between multiple modules within one domain.      |
-| **Architectural change** (e.g., integrate new subsystem)  | Project          | Understands and modifies cluster relationships at the project level.    |
+| AI Action Scope                                           | Target Layer     | Agent Context                                                          |
+| --------------------------------------------------------- | ---------------- | ---------------------------------------------------------------------- |
+| **Local optimization** (bug fix, refactor, feature tweak) | Semantic Module  | Operates within a single module using its documentation and tests.     |
+| **Domain evolution** (e.g., add new capability)           | Semantic Cluster | Considers interactions between multiple modules within one domain.     |
+| **Architectural change** (e.g., integrate new subsystem)  | Project          | Understands and modifies cluster relationships at the project level.   |
 
 Each level provides its own contextual envelope — ensuring safe and bounded reasoning.
 Agents can perform modifications proportionate to their level of understanding without overstepping contextual boundaries.
