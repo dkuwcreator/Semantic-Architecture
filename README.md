@@ -139,9 +139,12 @@ The **Semantic Architecture MCP Server** transforms this framework into a live s
 - **Live Semantic Context**: Real-time access to project structure, validation, and drift detection
 - **API Endpoints**: RESTful APIs for semantic graph, validation, glossary, and ADRs
 - **AI Integration**: Enables AI agents and tools to query semantic intelligence
+- **Cross-Platform**: Supports Linux, macOS, and Windows
 - **Deployment Ready**: Supports both local and Docker deployment
 
 **Quick Start:**
+
+**Linux/macOS:**
 ```bash
 # Local deployment
 ./start-local.sh
@@ -150,9 +153,20 @@ The **Semantic Architecture MCP Server** transforms this framework into a live s
 ./start-docker.sh dev
 ```
 
+**Windows (PowerShell):**
+```powershell
+# Local deployment
+.\start-local.ps1
+
+# Docker deployment
+.\start-docker.ps1 dev
+```
+
 **Documentation:**
+- [Quick Start Guide](QUICKSTART.md) - Get started in 30 seconds
 - [MCP Server README](mcp_server/README.md) - API documentation and usage
 - [Deployment Guide](DEPLOYMENT.md) - Complete deployment instructions
+- [Testing Guide](tests/README.md) - Comprehensive testing documentation
 
 ---
 

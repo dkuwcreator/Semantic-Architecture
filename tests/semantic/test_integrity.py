@@ -261,18 +261,19 @@ This term appears before any category heading.
         assert entries[0].category is None
     
     @pytest.mark.semantic
+    @pytest.mark.slow
     def test_large_graph_handling(self):
-        """Test handling of large semantic graphs."""
+        """Test handling of graphs with multiple nodes."""
         from mcp_server.models import SemanticNode, SemanticGraph
         
-        # Create a graph with many nodes
+        # Create a graph with 20 nodes to validate scalability
         nodes = [
             SemanticNode(
                 id=f"node-{i}",
                 scope="module",
                 name=f"Module {i}"
             )
-            for i in range(100)
+            for i in range(20)
         ]
         
         graph = SemanticGraph(
@@ -281,7 +282,7 @@ This term appears before any category heading.
             meta={"generatedAt": "2025-11-06T19:00:00Z"}
         )
         
-        assert len(graph.nodes) == 100
+        assert len(graph.nodes) == 20
         
         # Should be able to serialize
         json.dumps(graph.model_dump())

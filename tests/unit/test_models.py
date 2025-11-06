@@ -56,9 +56,8 @@ class TestSemanticEdge:
     @pytest.mark.unit
     def test_valid_semantic_edge(self):
         """Test creating a valid semantic edge."""
-        edge = SemanticEdge(
-            **{"from": "node-a", "to": "node-b", "type": "depends-on"}
-        )
+        # Using from_node parameter directly since it's aliased
+        edge = SemanticEdge(from_node="node-a", to="node-b", type="depends-on")
         assert edge.from_node == "node-a"
         assert edge.to == "node-b"
         assert edge.type == "depends-on"
@@ -66,9 +65,7 @@ class TestSemanticEdge:
     @pytest.mark.unit
     def test_semantic_edge_minimal(self):
         """Test semantic edge with minimal required fields."""
-        edge = SemanticEdge(
-            **{"from": "a", "to": "b", "type": "link"}
-        )
+        edge = SemanticEdge(from_node="a", to="b", type="link")
         assert edge.from_node == "a"
         assert edge.to == "b"
 
