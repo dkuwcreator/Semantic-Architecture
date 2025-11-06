@@ -64,29 +64,24 @@ def validate_module_structure(semantic_instructions_path: str, diags: List[Dict[
     """Validate that module directory structure adheres to one-level subdirectory rule."""
     module_dir = os.path.dirname(semantic_instructions_path)
     
-    # Walk the module directory and check for nesting depth
-    for root, dirs, files in os.walk(module_dir):
-        rel_path = os.path.relpath(root, module_dir)
-        
-        # Skip the module root itself
-        if rel_path == ".":
-            continue
-        
-        # Count the depth: number of path separators + 1
-        # 'docs' has 0 separators → depth 1 (allowed)
-        # 'docs/subdir' has 1 separator → depth 2 (not allowed)
-        depth = rel_path.count(os.sep) + 1
-        
-        if depth > 1:
-            add_diag(
-                diags, 
-                "error", 
-                "SI003", 
-                f"Module directory structure exceeds one level of nesting: {rel_path}. Modules may only contain one level of subdirectories.",
-                semantic_instructions_path
-            )
-            # Report only once per module
-            break
+    # List immediate subdirectories of the module directory
+    for entry in os.listdir(module_dir):
+        entry_path = os.path.join(module_dir, entry)
+        if os.path.isdir(entry_path):
+            # Check if this subdirectory contains any subdirectories
+            for subentry in os.listdir(entry_path):
+                subentry_path = os.path.join(entry_path, subentry)
+                if os.path.isdir(subentry_path):
+                    rel_path = os.path.relpath(subentry_path, module_dir)
+                    add_diag(
+                        diags,
+                        "error",
+                        "SI003",
+                        f"Module directory structure exceeds one level of nesting: {rel_path}. Modules may only contain one level of subdirectories.",
+                        semantic_instructions_path
+                    )
+                    # Report only once per module
+                    return
 
 
 
