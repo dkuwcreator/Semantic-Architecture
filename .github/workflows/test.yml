@@ -45,9 +45,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
       
+      - name: Create test results directory
+        shell: bash
+        run: mkdir -p test-results
+      
       - name: Run unit tests
         run: |
-          mkdir -p test-results
           pytest tests/unit -v --tb=short -m unit --no-cov --junit-xml=test-results/unit-${{ matrix.os }}-py${{ matrix.python-version }}.xml
       
       - name: Run integration tests
