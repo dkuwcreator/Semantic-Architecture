@@ -48,15 +48,15 @@ jobs:
       - name: Run unit tests
         run: |
           mkdir -p test-results
-          pytest tests/unit -v --tb=short -m unit --junit-xml=test-results/unit-${{ matrix.os }}-py${{ matrix.python-version }}.xml
+          pytest tests/unit -v --tb=short -m unit --no-cov --junit-xml=test-results/unit-${{ matrix.os }}-py${{ matrix.python-version }}.xml
       
       - name: Run integration tests
         run: |
-          pytest tests/integration -v --tb=short -m integration --junit-xml=test-results/integration-${{ matrix.os }}-py${{ matrix.python-version }}.xml
+          pytest tests/integration -v --tb=short -m integration --no-cov --junit-xml=test-results/integration-${{ matrix.os }}-py${{ matrix.python-version }}.xml
       
       - name: Run semantic tests
         run: |
-          pytest tests/semantic -v --tb=short -m semantic --junit-xml=test-results/semantic-${{ matrix.os }}-py${{ matrix.python-version }}.xml
+          pytest tests/semantic -v --tb=short -m semantic --no-cov --junit-xml=test-results/semantic-${{ matrix.os }}-py${{ matrix.python-version }}.xml
       
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -186,12 +186,12 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}/test-results:/app/test-results \
             semantic-mcp:test \
-            pytest -v --tb=short --junit-xml=/app/test-results/docker-junit.xml
+            pytest -v --tb=short --no-cov --junit-xml=/app/test-results/docker-junit.xml
       
       - name: Test Docker Compose
         run: |
           docker compose -f docker-compose.test.yml build
-          docker compose -f docker-compose.test.yml run --rm test pytest tests/unit -v
+          docker compose -f docker-compose.test.yml run --rm test pytest tests/unit -v --no-cov
       
       - name: Upload Docker test results
         uses: actions/upload-artifact@v4
