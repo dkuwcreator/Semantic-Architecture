@@ -12,9 +12,9 @@ This MCP server exposes the Semantic Architecture framework's documentation and 
 - **project-model**: The Semantic Project Model document
 
 ### Tools
-- **semantic.map**: Build a hierarchical map of Project → Cluster → Module structure
-- **semantic.validate**: Validate that semantic modules contain required documentation
-- **semantic.initModule**: Scaffold a new semantic module with proper structure
+- **semantic-map**: Build a hierarchical map of Project → Cluster → Module structure
+- **semantic-validate**: Validate that semantic modules contain required documentation
+- **semantic-init-module**: Scaffold a new semantic module with proper structure
 
 ## Quick Start
 

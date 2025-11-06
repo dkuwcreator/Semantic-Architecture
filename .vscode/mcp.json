@@ -1,9 +1,17 @@
 {
   "servers": {
     "semantic-architecture": {
-      "type": "http",
-      "url": "http://localhost:3000/mcp",
-      "description": "Semantic Architecture MCP Server - Provides resources and tools for semantic project management"
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-v",
+        "${workspaceFolder}:/workspace",
+        "-e",
+        "REPO_ROOT=/workspace",
+        "semantic-architecture-mcp-server"
+      ]
     }
   }
 }

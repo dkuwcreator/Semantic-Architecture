@@ -14,9 +14,9 @@ The MCP server exposes three key resources that can be added to AI context:
 ### Tools
 Three powerful tools for working with semantic architectures:
 
-1. **semantic.map** - Scans and maps your Project → Cluster → Module hierarchy
-2. **semantic.validate** - Validates semantic modules have required documentation
-3. **semantic.initModule** - Scaffolds new semantic modules with proper structure
+1. **semantic-map** - Scans and maps your Project → Cluster → Module hierarchy
+2. **semantic-validate** - Validates semantic modules have required documentation
+3. **semantic-init-module** - Scaffolds new semantic modules with proper structure
 
 ## Quick Start (3 Steps)
 
@@ -30,34 +30,73 @@ npm run build
 npm start
 ```
 
-**Option B: Using Docker**
+**Option B: Using Docker (HTTP mode for testing)**
 ```bash
 docker-compose up -d
 ```
 
-**Option C: Using Docker directly**
+This starts the server in HTTP mode at `http://localhost:3000/mcp` (useful for testing with curl).
+
+**Option C: Using Docker directly (stdio mode for VS Code)**
 ```bash
-docker build -t semantic-architecture-mcp:latest ./mcp-server
-docker run -p 3000:3000 semantic-architecture-mcp:latest
+docker build -t semantic-architecture-mcp-server .
+# Server uses stdio by default, used by VS Code configuration
 ```
 
-The server will be available at `http://localhost:3000/mcp`.
+**Option D: Using Docker directly (HTTP mode)**
+```bash
+docker build -t semantic-architecture-mcp-server .
+docker run -p 3000:3000 semantic-architecture-mcp-server --http
+```
+
+For VS Code integration, the stdio mode (used by the `.vscode/mcp.json` configuration) is recommended.
 
 ### Step 2: Configure VS Code
 
-The repository includes a pre-configured `.vscode/mcp.json` file. If you need to customize it:
+The repository includes a pre-configured `.vscode/mcp.json` file that uses Docker with stdio transport:
 
 ```json
 {
   "servers": {
     "semantic-architecture": {
-      "type": "http",
-      "url": "http://localhost:3000/mcp",
-      "description": "Semantic Architecture MCP Server"
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-v",
+        "${workspaceFolder}:/workspace",
+        "-e",
+        "REPO_ROOT=/workspace",
+        "semantic-architecture-mcp-server"
+      ]
     }
   }
 }
 ```
+
+**Alternative: HTTP Transport**
+
+If you prefer HTTP transport (e.g., for remote access), you can:
+
+1. Start the server in HTTP mode:
+   ```bash
+   docker run -p 3000:3000 semantic-architecture-mcp-server --http
+   ```
+
+2. Use this configuration:
+   ```json
+   {
+     "servers": {
+       "semantic-architecture": {
+         "type": "http",
+         "url": "http://localhost:3000/mcp"
+       }
+     }
+   }
+   ```
+
+   Note: HTTP transport may have limitations with VS Code's MCP client. Stdio transport (default) is recommended.
 
 ### Step 3: Use with GitHub Copilot
 
@@ -71,19 +110,19 @@ The repository includes a pre-configured `.vscode/mcp.json` file. If you need to
 ### Building a Semantic Map
 
 In Copilot Chat, you can ask:
-> "Use the semantic.map tool to show me the project structure"
+> "Use the semantic-map tool to show me the project structure"
 
 This will scan your repository for clusters and modules.
 
 ### Validating Your Structure
 
-> "Use semantic.validate to check if all modules have proper documentation"
+> "Use semantic-validate to check if all modules have proper documentation"
 
 This ensures each module has both `about.md` and `semantic-instructions.md`.
 
 ### Creating a New Module
 
-> "Use semantic.initModule to create a new module called 'user-auth' in the 'security' cluster"
+> "Use semantic-init-module to create a new module called 'user-auth' in the 'security' cluster"
 
 This scaffolds a properly structured semantic module.
 
@@ -155,14 +194,20 @@ echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
 docker push ghcr.io/YOUR_ORG/semantic-architecture-mcp:0.1.0
 ```
 
-Then team members can use:
+Then team members can use in their `.vscode/mcp.json`:
 ```json
 {
   "servers": {
     "semantic-architecture": {
       "command": "docker",
       "args": [
-        "run", "--rm", "-i",
+        "run",
+        "--rm",
+        "-i",
+        "-v",
+        "${workspaceFolder}:/workspace",
+        "-e",
+        "REPO_ROOT=/workspace",
         "ghcr.io/YOUR_ORG/semantic-architecture-mcp:0.1.0"
       ]
     }

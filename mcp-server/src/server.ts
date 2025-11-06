@@ -8,6 +8,7 @@ import { glob } from "glob";
 
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 /**
  * Determines the repository root directory.
@@ -66,7 +67,7 @@ server.registerResource(
 
 /** TOOL: Build a lightweight semantic map from folder structure */
 server.registerTool(
-  "semantic.map",
+  "semantic-map",
   {
     title: "Build Semantic Map",
     description: "Infer Project → Cluster → Module hierarchy from repo folders",
@@ -107,7 +108,7 @@ server.registerTool(
 
 /** TOOL: Validate each semantic module has about.md + semantic-instructions.md */
 server.registerTool(
-  "semantic.validate",
+  "semantic-validate",
   {
     title: "Validate Semantic Modules",
     description: "Ensure each module folder contains about.md and semantic-instructions.md",
@@ -150,7 +151,7 @@ server.registerTool(
 
 /** TOOL: Scaffold a new semantic module */
 server.registerTool(
-  "semantic.initModule",
+  "semantic-init-module",
   {
     title: "Create Semantic Module",
     description: "Scaffold a module with about.md and semantic-instructions.md",
@@ -179,24 +180,36 @@ server.registerTool(
   }
 );
 
-/** HTTP transport for VS Code / Copilot */
-const app = express();
-app.use(express.json());
+/** Decide transport mode: stdio (default) or HTTP */
+const useStdio = process.argv.includes("--stdio") || (!process.argv.includes("--http") && process.stdin.isTTY === false);
 
-app.post("/mcp", async (req: Request, res: Response) => {
-  const transport = new StreamableHTTPServerTransport({ 
-    enableJsonResponse: true,
-    sessionIdGenerator: () => randomUUID()
+if (useStdio) {
+  // stdio transport for VS Code / Claude Desktop
+  const transport = new StdioServerTransport();
+  server.connect(transport).catch((err) => {
+    console.error("Stdio transport error:", err);
+    process.exit(1);
   });
-  res.on("close", () => transport.close());
-  await server.connect(transport);
-  await transport.handleRequest(req, res, req.body);
-});
+} else {
+  // HTTP transport for other clients
+  const app = express();
+  app.use(express.json());
 
-const port = parseInt(process.env.PORT || "3000", 10);
-app.listen(port, () => {
-  console.log(`Semantic Architecture MCP running on http://localhost:${port}/mcp`);
-}).on("error", (err: Error) => {
-  console.error(err);
-  process.exit(1);
-});
+  app.post("/mcp", async (req: Request, res: Response) => {
+    const transport = new StreamableHTTPServerTransport({ 
+      enableJsonResponse: true,
+      sessionIdGenerator: () => randomUUID()
+    });
+    res.on("close", () => transport.close());
+    await server.connect(transport);
+    await transport.handleRequest(req, res, req.body);
+  });
+
+  const port = parseInt(process.env.PORT || "3000", 10);
+  app.listen(port, () => {
+    console.log(`Semantic Architecture MCP running on http://localhost:${port}/mcp`);
+  }).on("error", (err: Error) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

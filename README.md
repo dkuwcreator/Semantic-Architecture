@@ -138,7 +138,7 @@ This repository includes a **Model Context Protocol (MCP) server** that exposes 
 
 3. **Use in GitHub Copilot**:
    - Access resources: Add context via MCP Resources (Vision, Collaboration Model, Project Model)
-   - Use tools: `semantic.map`, `semantic.validate`, `semantic.initModule`
+   - Use tools: `semantic-map`, `semantic-validate`, `semantic-init-module`
 
 ### Available Resources
 - **project-vision**: The VISION.md document
@@ -146,8 +146,8 @@ This repository includes a **Model Context Protocol (MCP) server** that exposes 
 - **project-model**: Semantic Project Model
 
 ### Available Tools
-- **semantic.map**: Build Project → Cluster → Module hierarchy
-- **semantic.validate**: Check module documentation completeness
-- **semantic.initModule**: Scaffold new semantic modules
+- **semantic-map**: Build Project → Cluster → Module hierarchy
+- **semantic-validate**: Check module documentation completeness
+- **semantic-init-module**: Scaffold new semantic modules
 
 See [`mcp-server/README.md`](mcp-server/README.md) for detailed documentation.

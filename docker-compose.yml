@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: mcp-server/Dockerfile
+    command: ["--http"]
     ports:
       - "3000:3000"
     environment:

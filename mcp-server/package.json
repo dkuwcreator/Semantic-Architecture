@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -p . && sh add-shebang.sh",
+    "build": "tsc -p . && node -e \"const fs=require('fs'); const file='dist/server.js'; const content=fs.readFileSync(file,'utf8'); fs.writeFileSync(file,'#!/usr/bin/env node\\n'+content); fs.chmodSync(file,0o755);\"",
     "start": "node dist/server.js"
   },
   "dependencies": {
