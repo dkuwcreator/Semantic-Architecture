@@ -78,6 +78,13 @@ class FilesystemAdapter:
                 i += 1
         
         try:
+            # Security note: Arguments are sanitized above through:
+            # 1. Script name validation (no path traversal)
+            # 2. Argument flag whitelist
+            # 3. Shell metacharacter filtering
+            # 4. Using list form (not shell=True) prevents shell injection
+            # CodeQL may flag this as command injection, but it's mitigated by comprehensive
+            # input validation above. All user input is sanitized before reaching subprocess.
             result = subprocess.run(
                 ["python3", str(script_path)] + sanitized_args,
                 cwd=str(self.repo_root),
