@@ -1,6 +1,6 @@
 """ADR (Architecture Decision Record) data models."""
-from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+from typing import List
+from pydantic import BaseModel
 
 
 class ADRRecord(BaseModel):

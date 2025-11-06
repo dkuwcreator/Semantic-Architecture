@@ -36,11 +36,18 @@ class FilesystemAdapter:
         Raises:
             RuntimeError: If script execution fails
         """
-        # Validate script name to prevent path traversal
-        if not script_name or '/' in script_name or '\\' in script_name or '..' in script_name:
+        # Validate script name to prevent path traversal using Path.resolve()
+        if not script_name:
             raise RuntimeError(f"Invalid script name: {script_name}")
         
-        script_path = self.scripts_dir / script_name
+        script_path = (self.scripts_dir / script_name).resolve()
+        scripts_dir_resolved = self.scripts_dir.resolve()
+        # Ensure the resolved script_path is within the scripts directory
+        try:
+            script_path.relative_to(scripts_dir_resolved)
+        except ValueError:
+            raise RuntimeError(f"Script path traversal detected: {script_name}")
+        
         if not script_path.exists():
             raise RuntimeError(f"Script not found: {script_path}")
         
@@ -65,14 +72,15 @@ class FilesystemAdapter:
                 # Get the value for this flag if it exists
                 if i < len(args) and not args[i].startswith('--'):
                     value = args[i]
-                    # Sanitize the value - reject suspicious characters
-                    if any(c in value for c in ['|', '&', ';', '\n', '\r', '`', '$', '(', ')']):
+                    # Whitelist: allow only alphanumeric, dash, underscore, dot, forward slash, and colon
+                    if not re.fullmatch(r'^[\w\-/.,:]+$', value):
                         raise RuntimeError(f"Invalid characters in argument value: {value}")
                     sanitized_args.append(value)
                     i += 1
             else:
                 # Standalone value (not preceded by a flag)
-                if any(c in arg for c in ['|', '&', ';', '\n', '\r', '`', '$', '(', ')']):
+                # Whitelist: allow only alphanumeric, dash, underscore, dot, forward slash, and colon
+                if not re.fullmatch(r'^[\w\-/.,:]+$', arg):
                     raise RuntimeError(f"Invalid characters in argument: {arg}")
                 sanitized_args.append(arg)
                 i += 1
@@ -104,8 +112,23 @@ class FilesystemAdapter:
     def read_glossary(self) -> List[GlossaryEntry]:
         """Parse and return glossary entries from docs/glossary.md.
         
+        Expected format of docs/glossary.md:
+            - Categories are indicated by Markdown headings (e.g., '## CategoryName').
+            - Each glossary term is indicated by a subheading (e.g., '### Term').
+            - The definition for a term follows the term line, and may span multiple lines 
+              until the next term or category.
+            - Blank lines are ignored.
+        
+        Parsing logic:
+            - The method iterates through each line, tracking the current category and term.
+            - When a new category or term is encountered, the previous entry is saved.
+            - Definitions are accumulated for each term until a new term or category is found.
+        
+        Behavior when file does not exist:
+            - If docs/glossary.md is missing, the method returns an empty list.
+        
         Returns:
-            List of glossary entries
+            List of GlossaryEntry objects, each containing term, definition, and category.
         """
         glossary_path = self.docs_dir / "glossary.md"
         if not glossary_path.exists():

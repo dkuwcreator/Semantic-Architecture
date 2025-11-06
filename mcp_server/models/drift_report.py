@@ -1,5 +1,5 @@
 """Drift report data models."""
-from typing import List, Optional, Dict, Any
+from typing import List, Dict
 from pydantic import BaseModel, Field
 
 

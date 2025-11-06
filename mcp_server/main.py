@@ -3,6 +3,7 @@
 This server exposes semantic context, validation, drift detection, and other
 semantic intelligence as HTTP endpoints following the MCP (Model Context Protocol) patterns.
 """
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -36,10 +37,19 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Configure CORS
+# Configure CORS with environment-based origins
+# Default to localhost only for security. Set CORS_ORIGINS env var for production.
+cors_origins_env = os.getenv("CORS_ORIGINS", "http://localhost:8000,http://localhost:3000")
+cors_origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
+
+# Allow all origins only if explicitly set via environment variable
+if os.getenv("CORS_ALLOW_ALL", "false").lower() == "true":
+    cors_origins = ["*"]
+    logger.warning("CORS configured to allow all origins. This is insecure for production.")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
