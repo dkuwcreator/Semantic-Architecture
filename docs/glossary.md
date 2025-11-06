@@ -17,7 +17,7 @@ The complete software system or application — typically represented by a repos
 A cohesive grouping of related functionality within a project, representing a bounded domain or subsystem (e.g., authentication, storage, reporting). Contains multiple Semantic Modules and provides domain-level coordination.
 
 ### Semantic Module
-The smallest self-contained, semantically complete unit of software. It encapsulates code, documentation, tests, and AI guidance in one flat context. Represents one clear concept, function, or feature that can be fully understood in isolation.
+The smallest self-contained, semantically complete unit of software. It encapsulates code, documentation, tests, and AI guidance in one context. Represents one clear concept, function, or feature that can be fully understood in isolation. May contain one level of subdirectories for organization (e.g., /docs/, /scripts/) but maintains a single semantic scope.
 
 ### Knowledge Ecosystem
 A dynamic software system where code and documentation form an integrated, living knowledge structure. Code is not just executable but also communicative, with meaning embedded directly in the system's structure.
