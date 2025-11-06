@@ -1,6 +1,6 @@
 """Semantic graph data models."""
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class SemanticContract(BaseModel):
@@ -22,14 +22,13 @@ class SemanticNode(BaseModel):
 
 class SemanticEdge(BaseModel):
     """An edge in the semantic graph."""
+    model_config = ConfigDict(populate_by_name=True)
+    
     from_node: str = Field(alias="from")
     to: str
     type: str
     label: Optional[str] = None
     confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
-
-    class Config:
-        populate_by_name = True
 
 
 class GraphMeta(BaseModel):

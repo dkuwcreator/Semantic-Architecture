@@ -1,5 +1,5 @@
 """Glossary data models."""
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 
@@ -8,4 +8,4 @@ class GlossaryEntry(BaseModel):
     term: str
     definition: str
     category: Optional[str] = None
-    related: list[str] = []
+    related: List[str] = []
