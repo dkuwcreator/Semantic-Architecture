@@ -36,13 +36,50 @@ class FilesystemAdapter:
         Raises:
             RuntimeError: If script execution fails
         """
+        # Validate script name to prevent path traversal
+        if not script_name or '/' in script_name or '\\' in script_name or '..' in script_name:
+            raise RuntimeError(f"Invalid script name: {script_name}")
+        
         script_path = self.scripts_dir / script_name
         if not script_path.exists():
             raise RuntimeError(f"Script not found: {script_path}")
         
+        # Validate and sanitize arguments
+        sanitized_args = []
+        allowed_arg_prefixes = ['--scope', '--ids', '--include', '--edgeTypes', '--outputFormat', 
+                                '--filters', '--version', '--targets', '--ruleset', '--fixMode',
+                                '--baseRef', '--headRef', '--threshold', '--scopes', 
+                                '--includeDiffSummary', '--root', '--patterns']
+        
+        i = 0
+        while i < len(args):
+            arg = args[i]
+            
+            # Check if it's a flag
+            if arg.startswith('--'):
+                if arg not in allowed_arg_prefixes:
+                    raise RuntimeError(f"Invalid argument flag: {arg}")
+                sanitized_args.append(arg)
+                i += 1
+                
+                # Get the value for this flag if it exists
+                if i < len(args) and not args[i].startswith('--'):
+                    value = args[i]
+                    # Sanitize the value - reject suspicious characters
+                    if any(c in value for c in ['|', '&', ';', '\n', '\r', '`', '$', '(', ')']):
+                        raise RuntimeError(f"Invalid characters in argument value: {value}")
+                    sanitized_args.append(value)
+                    i += 1
+            else:
+                # Standalone value (not preceded by a flag)
+                if any(c in arg for c in ['|', '&', ';', '\n', '\r', '`', '$', '(', ')']):
+                    raise RuntimeError(f"Invalid characters in argument: {arg}")
+                sanitized_args.append(arg)
+                i += 1
+        
         try:
             result = subprocess.run(
-                ["python3", str(script_path)] + args,
+                ["python3", str(script_path)] + sanitized_args,
                 cwd=str(self.repo_root),
                 capture_output=True,
                 text=True,
