@@ -1,5 +1,8 @@
 # 🌍 Vision: Semantic Architecture for Human–AI Collaboration
 
+**Version:** 2.0  
+**Last Updated:** 2025-11-06
+
 ---
 
 ## 1. Introduction
@@ -34,14 +37,14 @@ To make AI a safe and effective collaborator, we need to reverse that relationsh
 
 ### 3.1 From Codebases to Knowledge Ecosystems
 
-The future of software is not a static repository of code — it’s a **dynamic ecosystem of knowledge**.
+The future of software is not a static repository of code — it’s a **dynamic Knowledge Ecosystem**.
 Every unit of code should be **self-explanatory**, **contextually complete**, and **co-maintainable** by humans and AI alike.
 
 This means:
 
 * Code and documentation are co-located and co-equal.
 * Meaning is embedded directly in the structure of the system.
-* Change happens within **bounded semantic scopes**, minimizing risk.
+* Change happens within **Bounded Contexts**, minimizing risk.
 
 A system like this doesn’t just *run*.
 It *communicates*.
@@ -92,6 +95,13 @@ They read, reason, and act within the smallest scope that contains the problem:
 
 This mirrors how human teams work — specialists handle localized tasks, while architects maintain global coherence.
 The Semantic Architecture encodes this logic directly into the system.
+#### Semantic Stewardship
+
+Every Semantic Module and Cluster has a **semantic steward** — human or AI — responsible for maintaining its meaning, coherence, and intent.
+This stewardship creates a chain of accountability, ensuring that every component of the system has a guardian that protects its semantic integrity.
+
+Stewardship is not just about writing code — it's about preserving the *why* behind the code, ensuring that future collaborators (human or machine) can understand and evolve the system without losing its original purpose.
+
 
 ---
 
@@ -123,6 +133,13 @@ Agents traverse this landscape like explorers — understanding one module befor
 A Semantic System is self-sustaining because it evolves *with awareness*.
 Agents and humans alike contribute to it by maintaining clarity and coherence, not just functionality.
 
+This evolution follows the **Semantic Evolution Loop** — a continuous cycle that enables autonomous, sustainable development:
+
+> **Perception → Reasoning → Action → Reflection → Verification → Evolution**
+
+At each iteration, the system not only changes but *understands* its changes, preserving meaning over time.
+This self-reinforcing loop is the foundation for systems that can grow, adapt, and maintain their integrity autonomously.
+
 ---
 
 ## 5. The Role of AI
@@ -145,7 +162,7 @@ In this way, **AI becomes a responsible actor** — constrained by the same cogn
 
 Because every layer of the Semantic Architecture is self-describing, it can also be **self-maintaining**.
 
-Periodic “semantic maintenance agents” can:
+Periodic “Semantic Maintenance Agents” can:
 
 * Scan all modules for drift between code and documentation.
 * Update `semantic-instructions.md` automatically when functions change.
@@ -174,7 +191,85 @@ between human creativity and machine precision.
 
 ---
 
-## 8. Closing Thoughts
+## 9. Visual Overview: The Semantic Architecture System
+
+The Semantic Architecture can be visualized as three interconnected dimensions:
+
+### Structural Layers
+
+```
+┌─────────────────────────────────────────────────┐
+│          SEMANTIC PROJECT                       │
+│  (Complete System / Repository)                 │
+│                                                 │
+│  ┌───────────────┐  ┌───────────────┐          │
+│  │   CLUSTER     │  │   CLUSTER     │          │
+│  │   (Domain)    │  │   (Domain)    │          │
+│  │               │  │               │          │
+│  │  ┌─────────┐  │  │  ┌─────────┐  │          │
+│  │  │ MODULE  │  │  │  │ MODULE  │  │          │
+│  │  └─────────┘  │  │  └─────────┘  │          │
+│  │  ┌─────────┐  │  │  ┌─────────┐  │          │
+│  │  │ MODULE  │  │  │  │ MODULE  │  │          │
+│  │  └─────────┘  │  │  └─────────┘  │          │
+│  └───────────────┘  └───────────────┘          │
+└─────────────────────────────────────────────────┘
+```
+
+### Collaboration Flows
+
+```
+Human Developer ←→ Module Agent  ←→  Semantic Module
+                                     (Code + Docs + Tests)
+                        ↕
+System Architect ←→ Cluster Agent ←→ Semantic Cluster
+                                     (Domain Coordination)
+                        ↕
+  Tech Lead     ←→ Project Agent ←→  Semantic Project
+                                     (System Integration)
+```
+
+### Core Artifacts
+
+Each Semantic Module contains:
+- **Code**: Executable implementation
+- **about.md**: Human-readable context and usage
+- **semantic-instructions.md**: AI-readable contracts and rules
+- **Tests**: Validation and behavioral verification
+
+These elements form a **Knowledge Cell** — a self-contained, self-describing unit that can be understood and modified in isolation.
+
+---
+
+## 10. Related Documents
+
+This vision is operationalized through two companion documents:
+
+### [Semantic Project Model](semantic-project-model.md)
+**What:** Defines the structural hierarchy (Project → Cluster → Module), documentation standards, and schema specifications. This document answers "What is the Semantic Architecture made of?"
+
+**Key Topics:**
+- Three-layer hierarchical structure
+- YAML front matter schema for `semantic-instructions.md`
+- Documentation roles and requirements
+- Cognitive principles and boundaries
+
+### [Semantic Collaboration Model](semantic-collaboration-model.md)
+**How:** Describes behavioral patterns, collaboration protocols, and tooling for human-AI interaction. This document answers "How do we work within the Semantic Architecture?"
+
+**Key Topics:**
+- Semantic Ownership and Stewardship
+- Semantic Validation and Semantic Graph
+- AI agent roles and collaboration protocols
+- Semantic Evolution Loop implementation
+- Tooling integration (CI/CD, version control)
+
+### [Glossary](glossary.md)
+**Reference:** Centralized definitions of all terms and concepts used across the Semantic Architecture framework.
+
+---
+
+## 11. Closing Thoughts
 
 The Semantic Architecture isn’t just about how we structure our projects —
 it’s about **how we think about code** in a world where intelligence is shared.
