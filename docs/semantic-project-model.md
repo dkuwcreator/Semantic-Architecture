@@ -1,6 +1,7 @@
 # 🧠 Semantic Project Model
 
-**Version:** 1.0
+**Version:** 2.0
+**Last Updated:** 2025-11-06
 **Author:** [Your Team or Organization]
 **Purpose:** Define the structure, semantics, and collaboration model for AI-cooperative software development.
 
@@ -17,6 +18,8 @@ The model enables:
 * AI agents to reason safely about localized code changes.
 * Developers to work within small, well-bounded contexts.
 * Projects to scale naturally without losing semantic clarity.
+
+**Note:** This document defines the *structural* aspects of the Semantic Architecture. For behavioral aspects, collaboration protocols, and tooling integration, see the companion [Semantic Collaboration Model](semantic-collaboration-model.md).
 
 ---
 
@@ -46,6 +49,38 @@ The Semantic Project Model defines three conceptual layers:
 | **Semantic Module**  | The smallest, self-contained unit of code and meaning | File set               | `about.md`, `semantic-instructions.md`      |
 
 Each layer is a **cognitive boundary** — a distinct level at which reasoning, modification, and validation can occur.
+
+### Visual Representation
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   SEMANTIC PROJECT                      │
+│                  (Repository Root)                      │
+│   • about.md                                            │
+│   • semantic-instructions.md                            │
+│                                                         │
+│   ┌──────────────────────┐   ┌──────────────────────┐  │
+│   │  SEMANTIC CLUSTER    │   │  SEMANTIC CLUSTER    │  │
+│   │  (Domain/Subsystem)  │   │  (Domain/Subsystem)  │  │
+│   │  • about.md          │   │  • about.md          │  │
+│   │  • semantic-inst...  │   │  • semantic-inst...  │  │
+│   │                      │   │                      │  │
+│   │  ┌──────────────┐    │   │  ┌──────────────┐    │  │
+│   │  │   MODULE     │    │   │  │   MODULE     │    │  │
+│   │  │  • code      │    │   │  │  • code      │    │  │
+│   │  │  • about.md  │    │   │  │  • about.md  │    │  │
+│   │  │  • sem-inst  │    │   │  │  • sem-inst  │    │  │
+│   │  │  • tests     │    │   │  │  • tests     │    │  │
+│   │  └──────────────┘    │   │  └──────────────┘    │  │
+│   │                      │   │                      │  │
+│   │  ┌──────────────┐    │   │  ┌──────────────┐    │  │
+│   │  │   MODULE     │    │   │  │   MODULE     │    │  │
+│   │  └──────────────┘    │   │  └──────────────┘    │  │
+│   └──────────────────────┘   └──────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+```
+
+This hierarchical structure mirrors cognitive scaling — from system-wide understanding (Project) to domain expertise (Cluster) to focused implementation (Module).
 
 ---
 
@@ -181,6 +216,19 @@ change_policy:
 
 Followed by detailed instructions for AI agents.
 
+**Schema Fields:**
+
+* **scope**: Level of the semantic unit (`project`, `cluster`, or `module`)
+* **id**: Unique identifier within the parent scope
+* **name**: Human-readable display name
+* **owners**: List of semantic stewards responsible for this unit (see [Semantic Collaboration Model](semantic-collaboration-model.md#semantic-ownership) for details)
+* **reviewers**: Optional list of additional reviewers or validation agents
+* **contract**: Semantic guarantees and invariants
+* **validation**: Test references and validation rules
+* **change_policy**: Guidelines for safe modifications and escalation procedures
+
+The `owners` field establishes **Semantic Stewardship** — clear accountability for maintaining the meaning and integrity of each component.
+
 This front matter enables:
 
 * **Schema validation**: Ensure all required fields are present
@@ -202,6 +250,63 @@ The Semantic Project Model is designed for **multi-scale AI reasoning**:
 
 Each level provides its own contextual envelope — ensuring safe and bounded reasoning.
 Agents can perform modifications proportionate to their level of understanding without overstepping contextual boundaries.
+
+**For detailed collaboration protocols, agent roles, and workflows, see the [Semantic Collaboration Model](semantic-collaboration-model.md).**
+
+---
+
+## 8.1 Semantic Tooling Integration
+
+The YAML front matter in `semantic-instructions.md` serves as the foundation for powerful semantic tooling:
+
+### Semantic Graph Construction
+
+The metadata enables automatic construction of a project-wide **Semantic Graph**:
+
+* **Nodes**: Semantic Modules (identified by `scope` and `id`)
+* **Edges**: Dependencies extracted from `contract` and cross-references
+* **Attributes**: Owners, invariants, validation rules
+
+This graph enables:
+- Visual navigation of the codebase
+- Dependency impact analysis
+- Automated change validation
+- AI agent path planning
+
+### Semantic Validation Tools
+
+Automated validators can verify:
+- All required YAML fields are present and correctly formatted
+- Referenced tests exist and pass
+- Declared invariants align with implementation
+- Ownership assignments are valid
+- Cross-module references resolve correctly
+
+### Continuous Integration
+
+The schema integrates naturally with CI/CD pipelines:
+
+```yaml
+# Example CI check
+- name: Validate Semantic Contracts
+  run: semantic-check --validate-all
+  
+- name: Verify Ownership
+  run: semantic-check --verify-owners
+  
+- name: Check Semantic Drift
+  run: semantic-diff HEAD~1 HEAD
+```
+
+### IDE and Editor Integration
+
+The structured metadata enables:
+- Context-aware navigation (jump to module by semantic ID)
+- Inline display of ownership and contracts
+- Validation warnings for drift or policy violations
+- AI assistant scoping based on semantic boundaries
+
+**See [Semantic Collaboration Model](semantic-collaboration-model.md#semantic-tooling-principles) for detailed tooling specifications.**
 
 ---
 
@@ -229,6 +334,35 @@ These principles make large codebases more tractable for both human comprehensio
 | **Human Comprehension**    | Each layer stays cognitively manageable.                          |
 | **Documentation Fidelity** | Meaning and implementation remain synchronized.                   |
 | **Composable Design**      | Modules and clusters can be reused or rearranged across projects. |
+
+---
+
+## 11.5 Related Documents
+
+This document is part of the Semantic Architecture framework:
+
+### [Vision: Semantic Architecture](vision.md)
+**Why:** Articulates the philosophical foundation and long-term vision. Explains the motivation behind the Semantic Architecture and its role in human-AI collaboration.
+
+**Key Topics:**
+- The problem with traditional codebases
+- Knowledge Ecosystems and cognitive scalability
+- Semantic Stewardship
+- The Semantic Evolution Loop
+- Visual overview of the complete system
+
+### [Semantic Collaboration Model](semantic-collaboration-model.md)
+**How:** Defines behavioral patterns, workflows, and tooling for operating within the Semantic Project Model.
+
+**Key Topics:**
+- Semantic Ownership and Living Knowledge Cells
+- AI agent roles (Module, Cluster, Project Agents)
+- Collaboration protocols and the Semantic Evolution Loop
+- Semantic Validation, Semantic Graph, and Semantic Memory
+- Semantic Maintenance Agents and self-healing systems
+
+### [Glossary](glossary.md)
+**Reference:** Centralized definitions of all terms and concepts.
 
 ---
 

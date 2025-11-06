@@ -1,4 +1,6 @@
 # 🧬 Semantic Collaboration Model
+**Version:** 2.0
+**Last Updated:** 2025-11-06
 
 **Companion to:** *Semantic Project Model*
 **Purpose:** Define how humans and AI agents collaborate within the Semantic Project Model to maintain, evolve, and reason about software systems.
@@ -9,8 +11,8 @@
 
 The **Semantic Collaboration Model** describes how humans and AI agents interact with, maintain, and evolve systems built on the **Semantic Project Model**.
 
-While the Semantic Project Model defines *structure* — projects, clusters, and modules — this model defines *behavior*:
-how AI agents and humans **use**, **interpret**, and **sustain** that structure over time.
+While the Semantic Project Model defines *structure* — projects, clusters, and modules — this model defines *behavior*: how AI agents and humans **use**, **interpret**, and **sustain** that structure over time.
+For structural specifications, schema definitions, and the three-layer hierarchy, see the companion [Semantic Project Model](semantic-project-model.md).
 
 The core idea is that every Semantic Module is a **bounded cognitive environment** — a unit small enough for an agent or human to fully understand, reason about, and modify safely.
 AI agents operate within these boundaries, guided by the semantics expressed in local documentation and reinforced by collaborative workflows.
@@ -52,15 +54,25 @@ Ownership creates a chain of accountability — ensuring every piece of the syst
 
 ### 2.3 Living Knowledge Cells
 
-Semantic Modules act as **living knowledge cells**: autonomous, self-describing entities capable of self-maintenance.
+Semantic Modules act as **Living Knowledge Cells**: autonomous, self-describing entities capable of self-maintenance.
 
 Each module should:
 
 * Contain enough information for an agent to refactor it safely.
 * Know how to validate its own correctness through tests or guidance.
-* Evolve independently as long as its semantic contract remains valid.
+* Evolve independently as long as its Semantic Contract remains valid.
 
-This transforms the codebase into a *distributed knowledge system* rather than a static artifact.
+This transforms the codebase into a *distributed Knowledge Ecosystem* rather than a static artifact.
+
+These cells evolve through the **Semantic Evolution Loop** (see Section 4.2), a continuous cycle that enables:
+- Perception of required changes
+- Reasoning about implications
+- Action with bounded modifications
+- Reflection on semantic integrity
+- Verification through validation
+- Evolution with preserved meaning
+
+This self-reinforcing loop, shared across all Semantic Architecture documents, is what makes systems truly self-sustaining.
 
 ---
 
@@ -91,6 +103,8 @@ Introduce automated validation tools to enforce structure and meaning:
 * Detect semantic drift between documentation and implementation.
 * Validate references in `semantic-instructions.md` against existing modules.
 
+These validators operate on the YAML front matter schema defined in the [Semantic Project Model](semantic-project-model.md#semantic-instructionsmd-format).
+
 **Purpose:** Keep semantics synchronized with code automatically.
 
 ---
@@ -109,6 +123,8 @@ This enables:
 * Smarter AI agent reasoning based on relational context.
 
 You can derive this graph directly from `semantic-instructions.md` references.
+
+For details on graph construction from YAML metadata, see [Semantic Project Model: Semantic Tooling Integration](semantic-project-model.md#81-semantic-tooling-integration).
 
 ---
 
@@ -142,6 +158,33 @@ Semantic diff tools can summarize changes in terms of *capability*, *intent*, or
 
 This allows both agents and humans to reason at the **intent level**, not just syntax.
 
+#### Example: Semantic Diff in Action
+
+Consider a commit to the `jwt_tools` module:
+
+**Traditional Diff:**
+```diff
+- def verify_token(token: str, key: str):
++ def verify_token(token: str, key: str, allow_rotation: bool = False):
+    """Verify JWT token signature"""
++   if allow_rotation:
++       key = get_rotated_key()
+    return jwt.decode(token, key)
+```
+
+**Semantic Diff:**
+```
+Module: auth/jwt_tools
+Intent Change: Added RSA key rotation capability
+Contract Update: 
+  - New invariant: "Support RSA key rotation"
+  - New parameter: allow_rotation (bool, default=False)
+Impact: Low (backward compatible, default behavior unchanged)
+Validation: test_jwt_tools.py::test_rotation (PASS)
+```
+
+The semantic diff references the module's YAML metadata (from [Semantic Project Model](semantic-project-model.md#semantic-instructionsmd-format)) to provide context-aware change summaries.
+
 ---
 
 ## 4. AI Collaboration Workflow
@@ -158,13 +201,15 @@ Each role operates within the **smallest possible context** that contains the ch
 
 ---
 
-### 4.2 Collaboration Protocol
+### 4.2 Collaboration Protocol: The Semantic Evolution Loop
+
+The collaboration between humans and AI agents follows the **Semantic Evolution Loop** — a continuous cycle that ensures changes preserve meaning while enabling evolution:
 
 **1. Perception:**
 Agent reads local context — `about.md`, `semantic-instructions.md`, code, and tests.
 
 **2. Reasoning:**
-Determines the change required, infers implications, and assesses semantic gravity.
+Determines the change required, infers implications, and assesses Semantic Gravity.
 
 **3. Action:**
 Modifies code while preserving documentation and structure.
@@ -173,12 +218,14 @@ Modifies code while preserving documentation and structure.
 Updates `semantic-instructions.md` and tests to reflect new behavior.
 
 **5. Verification:**
-Runs tests and semantic validation tools.
+Runs tests and semantic validation tools (see Section 3.1).
 
-**6. Escalation:**
-If the change affects other modules, the agent escalates to the cluster level.
+**6. Evolution:**
+If the change affects other modules, the agent escalates to the cluster level; otherwise, the loop completes with preserved semantic integrity.
 
-This creates a self-reinforcing, bounded loop — *Perception → Reasoning → Action → Reflection → Verification → Escalation* — ensuring changes remain semantically coherent.
+This creates a self-reinforcing, bounded loop — **Perception → Reasoning → Action → Reflection → Verification → Evolution** — ensuring changes remain semantically coherent and traceable.
+
+The same loop appears in the [Vision document](vision.md#45-evolution-through-understanding) as the foundation for autonomous system evolution, and is implemented here as a practical collaboration protocol.
 
 ---
 
@@ -233,6 +280,90 @@ Integrate the model into existing tooling:
 | **Shared Semantics**       | Humans and AIs interpret modules the same way through consistent documentation. |
 | **Cognitive Efficiency**   | The system stays small and understandable at every scale.                       |
 | **Evolutionary Stability** | As modules evolve, their meaning remains traceable and coherent.                |
+
+---
+
+## 5.5 Visual Overview: Collaboration Architecture
+
+The Semantic Collaboration Model operates across multiple dimensions:
+
+### Agent Collaboration Flow
+
+```
+┌────────────────────────────────────────────────────────┐
+│          SEMANTIC EVOLUTION LOOP                       │
+│                                                        │
+│   Perception → Reasoning → Action → Reflection        │
+│        ↑                               ↓               │
+│   Evolution ← Verification ←────────────┘              │
+│                                                        │
+└────────────────────────────────────────────────────────┘
+
+┌──────────────┐         ┌──────────────┐         ┌──────────────┐
+│   Human      │◄───────►│Module Agent  │◄───────►│   Module     │
+│  Developer   │         │              │         │(Knowledge Cell)│
+└──────────────┘         └──────────────┘         └──────────────┘
+                                ↕
+                         ┌──────────────┐
+                         │Cluster Agent │◄────────► Cluster
+                         └──────────────┘
+                                ↕
+                         ┌──────────────┐
+                         │Project Agent │◄────────► Project
+                         └──────────────┘
+```
+
+### Semantic Tooling Ecosystem
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                 SEMANTIC TOOLING LAYER                  │
+│                                                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌──────────────┐   │
+│  │  Semantic   │  │  Semantic   │  │   Semantic   │   │
+│  │  Validation │  │    Graph    │  │    Memory    │   │
+│  └─────────────┘  └─────────────┘  └──────────────┘   │
+│                                                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌──────────────┐   │
+│  │  Semantic   │  │   CI/CD     │  │     IDE      │   │
+│  │    Diff     │  │ Integration │  │  Integration │   │
+│  └─────────────┘  └─────────────┘  └──────────────┘   │
+└─────────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────────┐
+│            SEMANTIC PROJECT STRUCTURE                   │
+│         (Projects → Clusters → Modules)                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5.6 Related Documents
+
+This document is part of the Semantic Architecture framework:
+
+### [Vision: Semantic Architecture](vision.md)
+**Why:** Articulates the philosophical foundation and motivation for Semantic Architecture.
+
+**Key Topics:**
+- The problem with traditional codebases
+- Knowledge Ecosystems and cognitive scalability  
+- Semantic Stewardship
+- The Semantic Evolution Loop (conceptual foundation)
+- Long-term vision for human-AI collaboration
+
+### [Semantic Project Model](semantic-project-model.md)
+**What:** Defines the structural hierarchy, documentation standards, and schema specifications.
+
+**Key Topics:**
+- Three-layer structure (Project → Cluster → Module)
+- YAML front matter schema for `semantic-instructions.md`
+- Semantic Contract definitions
+- Cognitive boundaries and principles
+- Semantic Tooling Integration specifications
+
+### [Glossary](glossary.md)
+**Reference:** Centralized definitions of all terms and concepts used across the framework.
 
 ---
 
