@@ -1,0 +1,98 @@
+name: semanticGraph
+version: 0.1.0
+schemaVersion: 0.1
+description: Query the Semantic Graph (Project→Cluster→Module) built from semantic-instructions and docs. Read-only.
+owner: ["@dkuwcreator"]
+command:
+  exe: python
+  args: ["scripts/semantic_graph.py"]
+  useStdin: false
+  timeoutMs: 15000
+permissions:
+  network: false
+  write: false
+  paths:
+    allow: ["**/*"]
+argsSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  properties:
+    scope:
+      type: string
+      enum: [project, cluster, module]
+      default: project
+    ids:
+      type: array
+      items: { type: string }
+    include:
+      type: array
+      items: { type: string }
+    edgeTypes:
+      type: array
+      items: { type: string }
+    outputFormat:
+      type: string
+      enum: [json, dot]
+      default: json
+    filters:
+      type: object
+    version:
+      type: string
+  additionalProperties: false
+outputSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  required: [nodes, edges, meta]
+  properties:
+    nodes:
+      type: array
+      items:
+        type: object
+        required: [id, scope]
+        properties:
+          id: { type: string }
+          scope: { type: string }
+          name: { type: string }
+          path: { type: string }
+          owners:
+            type: array
+            items: { type: string }
+          contract:
+            type: object
+            properties:
+              invariants:
+                type: array
+                items: { type: string }
+              validation:
+                type: object
+                properties:
+                  tests:
+                    type: array
+                    items: { type: string }
+          meta: { type: object }
+    edges:
+      type: array
+      items:
+        type: object
+        required: [from, to, type]
+        properties:
+          from: { type: string }
+          to: { type: string }
+          type: { type: string }
+          label: { type: string }
+          confidence: { type: number, minimum: 0, maximum: 1 }
+    meta:
+      type: object
+      properties:
+        generatedAt: { type: string }
+        toolVersion: { type: string }
+        projectVersion: { type: string }
+        filtersApplied: { type: object }
+notes: |
+  Safety: read-only. No network. Obeys bounded context via provided scope/ids.
+  Evolution Loop: Perception step — source of current structure for reasoning.
+  Cache policy: may read optional cache at data/semantic-graph.json. Cache is considered stale on:
+    - changes to any **/semantic-instructions.md or **/about.md
+    - git HEAD change (commit differs from cache metadata)
+    - explicit bypass when args.version differs from cache meta.toolVersion
+  Script emits live data by default; cache is an optimization and must never mask changes.

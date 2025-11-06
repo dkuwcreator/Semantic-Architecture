@@ -1,0 +1,82 @@
+name: semanticDriftScanner
+version: 0.1.0
+schemaVersion: 0.1
+description: Detect semantic drift between docs/contracts and code across git refs. Read-only.
+owner: ["@dkuwcreator"]
+command:
+  exe: python
+  args: ["scripts/semantic_drift_scanner.py"]
+  useStdin: false
+  timeoutMs: 45000
+permissions:
+  network: false
+  write: false
+  paths:
+    allow: ["**/*"]
+argsSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  properties:
+    baseRef: { type: string }
+    headRef: { type: string }
+    scopes:
+      type: array
+      items: { type: string }
+    includeDiffSummary: { type: boolean, default: true }
+    threshold:
+      type: string
+      enum: [all, error, warning]
+      default: all
+  additionalProperties: false
+outputSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  required: [drifts, summary, meta]
+  properties:
+    drifts:
+      type: array
+      items:
+        type: object
+        required: [id, type, scope, target, message, confidence]
+        properties:
+          code: { type: string }
+          id: { type: string }
+          type: { type: string }
+          scope: { type: string, enum: [module, cluster] }
+          target:
+            type: object
+            required: [id, path]
+            properties:
+              id: { type: string }
+              path: { type: string }
+          message: { type: string }
+          confidence: { type: number, minimum: 0, maximum: 1 }
+          locations:
+            type: array
+            items:
+              type: object
+              properties:
+                file: { type: string }
+                startLine: { type: integer }
+                endLine: { type: integer }
+          suggestedActions:
+            type: array
+            items: { type: string }
+    summary:
+      type: object
+      required: [count]
+      properties:
+        count: { type: integer }
+        byType: { type: object }
+        bySeverity: { type: object }
+    diffSummary: { type: string }
+    meta:
+      type: object
+      properties:
+        generatedAt: { type: string }
+        toolVersion: { type: string }
+        baseRef: { type: string }
+        headRef: { type: string }
+notes: |
+  Safety: read-only; no network. Operates within provided scopes.
+  Evolution Loop: Perception + Verification — detects deviations to guide safe changes.

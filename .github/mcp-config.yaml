@@ -1,0 +1,88 @@
+# MCP configuration for Copilot Chat – registers tools and per-mode policies
+version: 0.1
+noNetwork: true
+
+tools:
+  - $ref: ./tools/semantic-graph.tool.yaml
+  - $ref: ./tools/semantic-validator.tool.yaml
+  - $ref: ./tools/semantic-drift-scanner.tool.yaml
+  - $ref: ./tools/ci-check.tool.yaml
+  - $ref: ./tools/adr-index.tool.yaml
+
+modes:
+  module-agent:
+    allowedTools: [semanticGraph, semanticValidator, semanticDriftScanner]
+    defaultArgs:
+      semanticGraph: { scope: module }
+      semanticValidator: { scope: module, fixMode: suggest }
+      semanticDriftScanner: {}
+    limits:
+      maxCallsPerSession: 6
+      timeoutsMs:
+        semanticGraph: 15000
+        semanticValidator: 20000
+        semanticDriftScanner: 45000
+    paths:
+      allow: ["**/semantic-instructions.md","**/about.md","docs/**",".github/**"]
+  cluster-agent:
+    allowedTools: [semanticGraph, semanticValidator, semanticDriftScanner]
+    defaultArgs:
+      semanticGraph: { scope: cluster }
+      semanticValidator: { scope: cluster, fixMode: suggest }
+      semanticDriftScanner: {}
+    limits:
+      maxCallsPerSession: 8
+    paths:
+      allow: ["**/semantic-instructions.md","**/about.md","docs/**",".github/**"]
+  project-agent:
+    allowedTools: [semanticGraph, semanticValidator, semanticDriftScanner, adrIndex]
+    defaultArgs:
+      semanticGraph: { scope: project }
+      semanticValidator: { scope: project, ruleset: strict, fixMode: suggest }
+      semanticDriftScanner: {}
+      adrIndex: {}
+    limits:
+      maxCallsPerSession: 10
+    paths:
+      allow: ["**/*"]
+  steward-reviewer:
+    allowedTools: [semanticGraph, semanticValidator, semanticDriftScanner, adrIndex, ciCheck]
+    defaultArgs:
+      semanticValidator: { ruleset: strict, fixMode: suggest }
+      semanticDriftScanner: {}
+      ciCheck: { mode: validate-all }
+    limits:
+      maxCallsPerSession: 12
+    paths:
+      allow: ["**/*"]
+
+policies:
+  writes:
+    allowed: false # tools are read-only; suggestions only
+  logging:
+    include:
+      - tool
+      - argsSummary
+      - scope
+      - durationMs
+      - outcome
+    excludePayloads: true
+    payloadMaxBytes: 4096
+  privacy:
+    anonymizePaths: true
+    redactContent: true
+    pii:
+      patterns: ["email", "token", "key"]
+      action: "redact"
+      maxMatchCount: 10
+
+toolsVersionSet:
+  semanticGraph: 0.1.0
+  semanticValidator: 0.1.0
+  semanticDriftScanner: 0.1.0
+  ciCheck: 0.1.0
+  adrIndex: 0.1.0
+
+notes:
+  - Tools are read-only and scoped via modes to enforce bounded reasoning.
+  - Aligns with Semantic Evolution Loop: Perception (graph/drift) → Reasoning (prompts) → Action (suggestedFix) → Reflection (doc updates) → Verification (ciCheck) → Evolution (merge).

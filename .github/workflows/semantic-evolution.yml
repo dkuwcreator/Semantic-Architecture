@@ -1,0 +1,172 @@
+name: Semantic Evolution
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  schedule:
+    - cron: '17 2 * * *'   # nightly
+    - cron: '23 3 * * 0'   # weekly (Sunday)
+  issue_comment:
+    types: [created]
+  workflow_dispatch: {}
+
+concurrency:
+  group: semantic-evolution-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  validate-config:
+    name: Validate Evolution Tasks Schema
+    runs-on: ubuntu-latest
+    outputs:
+      valid: ${{ steps.validate.outputs.valid }}
+      message: ${{ steps.validate.outputs.message }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate .github/evolution-tasks.yaml
+        id: validate
+        run: |
+          if (-not (Test-Path '.github/evolution-tasks.yaml')) {
+            "valid=false`nmessage=Missing evolution-tasks.yaml" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            throw 'Missing .github/evolution-tasks.yaml'
+          }
+          $content = Get-Content '.github/evolution-tasks.yaml' -Raw
+          try { $yaml = ConvertFrom-Yaml -Yaml $content } catch { $yaml = $null }
+          $requiredStages = @('perception','reasoning','action','reflection','verification','evolution')
+          $valid = $true
+          $msg = 'ok'
+          if ($null -eq $yaml) { $valid = $false; $msg = 'YAML parse failed' }
+          elseif (-not $yaml.schemaVersion) { $valid = $false; $msg = 'schemaVersion missing' }
+          elseif (-not $yaml.settings) { $valid = $false; $msg = 'settings missing' }
+          elseif (-not $yaml.settings.abortOnSchemaValidationFailure) { $valid = $false; $msg = 'abortOnSchemaValidationFailure must be true' }
+          else {
+            foreach ($s in $requiredStages) { if (-not $yaml.stages.$s) { $valid = $false; $msg = "stage '$s' missing"; break } }
+          }
+          "valid=$valid`nmessage=$msg" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          if (-not $valid -and $yaml.settings.abortOnSchemaValidationFailure) { throw "Invalid evolution-tasks.yaml: $msg" }
+
+  pr-perception-verification:
+    name: PR Perception → Verification
+    runs-on: ubuntu-latest
+    needs: validate-config
+    if: >-
+      ${{ github.event_name == 'pull_request' && needs.validate-config.outputs.valid == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Perception — Semantic Graph (best-effort)
+        run: |
+          if (Test-Path 'scripts/semantic_graph.py') {
+            python scripts/semantic_graph.py 2>$null || echo 'semantic_graph.py completed with warnings'
+          } else { echo 'semantic_graph.py not found' }
+      - name: Perception — Drift Scan (changed paths focus)
+        run: |
+          if (Test-Path 'scripts/semantic_drift_scanner.py') {
+            python scripts/semantic_drift_scanner.py 2>$null || echo 'semantic_drift_scanner.py completed with warnings'
+          } else { echo 'semantic_drift_scanner.py not found' }
+      - name: Verification — Semantic Validator
+        run: |
+          if (Test-Path 'scripts/ci_check.ps1') {
+            ./scripts/ci_check.ps1
+          } elseif (Test-Path 'scripts/semantic_validator.py') {
+            python scripts/semantic_validator.py
+          } else { echo 'No validator found'; exit 1 }
+      - name: Consolidate report
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          $report = @()
+          $report += '# Semantic Evolution — Consolidated Report'
+          $report += "Event: PR #${{ github.event.pull_request.number }}"
+          $report += "Commit: ${{ github.sha }}"
+          $report += ''
+          $report += '## Perception'
+          $report += '- semantic_graph.py: executed (best-effort)'
+          $report += '- semantic_drift_scanner.py: executed (best-effort)'
+          $report += ''
+          $report += '## Verification'
+          $report += '- semantic_validator/ci_check: completed'
+          $reportText = $report -join "`n"
+          $reportText | Out-File artifacts/CombinedReport.md -Encoding utf8
+      - name: Sticky PR Comment (consolidated)
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: semantic-evolution
+          path: artifacts/CombinedReport.md
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-consolidated-report
+          path: artifacts/CombinedReport.md
+
+  nightly-evolution:
+    name: Scheduled Evolution (Full Loop)
+    runs-on: ubuntu-latest
+    needs: validate-config
+    if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.validate-config.outputs.valid == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Perception — Full Scan
+        run: |
+          if (Test-Path 'scripts/semantic_graph.py') { python scripts/semantic_graph.py }
+          if (Test-Path 'scripts/semantic_drift_scanner.py') { python scripts/semantic_drift_scanner.py }
+      - name: Reasoning — POR (placeholder)
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          "# Reasoning Memo`n- Scope: bounded per drift`n- Next: propose patches where safe" | Out-File artifacts/reasoning-memo.md -Encoding utf8
+      - name: Verification — Full
+        run: |
+          if (Test-Path 'scripts/ci_check.ps1') { ./scripts/ci_check.ps1 } elseif (Test-Path 'scripts/semantic_validator.py') { python scripts/semantic_validator.py } else { echo 'No validator'; exit 1 }
+      - name: Consolidate report
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          $report = @('# Semantic Evolution — Scheduled Run','', '## Steps','- Perception','- Reasoning (placeholder)','- Verification','','## Notes','- Draft PR generation disabled (settings.allowCommitOnSchedule=false)')
+          ($report -join "`n") | Out-File artifacts/CombinedReport.md -Encoding utf8
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduled-consolidated-report
+          path: artifacts/CombinedReport.md
+
+  manual-evolve:
+    name: Manual /evolve command
+    runs-on: ubuntu-latest
+    needs: validate-config
+    if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/evolve') && needs.validate-config.outputs.valid == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.issue.pull_request && format('refs/pull/{0}/merge', github.event.issue.number) || github.ref }}
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Perception (manual)
+        run: |
+          if (Test-Path 'scripts/semantic_drift_scanner.py') { python scripts/semantic_drift_scanner.py }
+      - name: Consolidate and comment
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          "# /evolve`nTriggered by: @${{ github.actor }} on issue #${{ github.event.issue.number }}`n- Perception executed (manual)" | Out-File artifacts/CombinedReport.md -Encoding utf8
+      - name: Post comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          number: ${{ github.event.issue.number }}
+          header: semantic-evolution-manual
+          path: artifacts/CombinedReport.md

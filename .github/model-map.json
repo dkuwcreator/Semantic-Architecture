@@ -1,0 +1,152 @@
+{
+  "_comment": "Auto-generated from YAML – do not edit directly",
+  "schemaVersion": "1.0.0",
+  "version": "1.0.0",
+  "last-updated": "2025-11-06",
+  "owners": ["@dkuwcreator"],
+  "governanceFile": ".github/copilot-instructions.md",
+  "description": "Centralized model profile and escalation strategy mapped to Semantic Architecture roles (Module Agent, Cluster Steward, Project Architect). Applies bounded-context reasoning.",
+  "ciOverrides": {
+    "file": ".github/model-overrides.ci.yaml",
+    "note": "Override deterministic settings, max tokens, and budgets for CI"
+  },
+  "profiles": {
+    "fast-small": {
+      "displayName": "Fast Small Context",
+      "contextTokens": 64000,
+      "costClass": "low",
+      "temperature": 0.3,
+      "notes": "Optimized for speed and short-context work. Best for single-module reasoning and edits with local tests and docs. Deterministic defaults are suitable for CI."
+    },
+    "balanced-medium": {
+      "displayName": "Balanced Medium Context",
+      "contextTokens": 128000,
+      "costClass": "medium",
+      "temperature": 0.3,
+      "notes": "Balanced latency/cost with deeper reasoning for coordinating multiple modules within a cluster. Use when semantic gravity suggests inter-module analysis."
+    },
+    "advanced-large": {
+      "displayName": "Advanced Large Context",
+      "contextTokens": 200000,
+      "costClass": "high",
+      "temperature": 0.2,
+      "notes": "Highest context window and reasoning depth for project-wide synthesis and architectural tasks. Prefer for cross-cluster interfaces, ADR planning, and system integration."
+    }
+  },
+  "roles": {
+    "module-agent": {
+      "name": "Module Agent",
+      "description": "Operates within a single Semantic Module; bounded local reasoning and edits.",
+      "defaultProfile": "fast-small",
+      "escalationProfile": "balanced-medium",
+      "constraints": {
+        "boundedContext": "module",
+        "governanceRef": ".github/copilot-instructions.md"
+      }
+    },
+    "cluster-steward": {
+      "name": "Cluster Steward",
+      "description": "Coordinates changes across related modules within a Semantic Cluster.",
+      "defaultProfile": "balanced-medium",
+      "escalationProfile": "advanced-large",
+      "constraints": {
+        "boundedContext": "cluster",
+        "governanceRef": ".github/copilot-instructions.md"
+      }
+    },
+    "project-architect": {
+      "name": "Project Architect",
+      "description": "Maintains system-wide coherence and cross-cluster integration.",
+      "defaultProfile": "advanced-large",
+      "escalationProfile": "advanced-large",
+      "constraints": {
+        "boundedContext": "project",
+        "governanceRef": ".github/copilot-instructions.md"
+      }
+    }
+  },
+  "escalationRules": [
+    {
+      "id": "context-overflow",
+      "trigger": "Tokens required exceed current profile contextTokens",
+      "action": "Escalate to next profile for the role",
+      "audit": true
+    },
+    {
+      "id": "complexity-barrier",
+      "trigger": "Semantic Gravity indicates inter-module or cross-cluster reasoning",
+      "action": "Escalate to cluster or project role profile",
+      "audit": true
+    },
+    {
+      "id": "retry-failures",
+      "trigger": ">=2 model retries due to timeouts or ambiguous output",
+      "action": "Escalate one profile tier and lower temperature",
+      "audit": true
+    },
+    {
+      "id": "policy-conflict",
+      "trigger": "Governance conflict or invariant uncertainty",
+      "action": "Escalate to project-architect advanced-large and request human review",
+      "audit": true
+    }
+  ],
+  "costPolicy": {
+    "budgets": {
+      "perRunUSD": 0.5,
+      "perDayUSD": 15.0
+    },
+    "enforcement": {
+      "onExceed": "halt-and-review",
+      "notes": "Higher-cost operations require steward approval or CI override."
+    },
+    "logging": {
+      "includePromptHashes": true,
+      "anonymizePII": true
+    }
+  },
+  "validationProfile": {
+    "deterministic": {
+      "temperatureRange": [0.2, 0.4],
+      "topP": 1.0
+    },
+    "thresholds": {
+      "latencySeconds": {
+        "fast-small": 3,
+        "balanced-medium": 8,
+        "advanced-large": 15
+      },
+      "successRate": 0.98,
+      "maxRetries": 2
+    },
+    "reports": {
+      "enabled": true,
+      "artifacts": [
+        "logs/model-evals/*.json",
+        "logs/model-evals/*.md"
+      ]
+    }
+  },
+  "versioning": {
+    "strategy": "semver",
+    "changeTypes": [
+      "profile-tuning",
+      "role-mapping",
+      "policy-update"
+    ],
+    "escalation": "Major version bump requires ADR and steward approval",
+    "schemaEvolutionNote": "Future fields may include safetyRatings or complianceTags."
+  },
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2025-11-06",
+      "summary": "Initial model profiles and role mappings established.",
+      "adr": {
+        "id": "ADR-001",
+        "title": "Model Strategy and Escalation for Semantic Architecture",
+        "link": "docs/decisions/ADR-001-model-strategy.md"
+      }
+    }
+  ]
+}

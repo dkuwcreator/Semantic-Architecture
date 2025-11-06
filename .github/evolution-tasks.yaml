@@ -1,0 +1,126 @@
+schemaVersion: 1.0
+settings:
+  consolidatedComments: true
+  abortOnSchemaValidationFailure: true
+  allowCommitOnSchedule: false
+
+stages:
+  perception:
+    id: perception
+    enabledOn:
+      pr: true
+      schedule: true
+      manual: true
+    scopeAllowed: [module, cluster, project]
+    inputs:
+      semanticGraphScript: scripts/semantic_graph.py
+      semanticGraphData: data/semantic-graph.json
+      driftScannerScript: scripts/semantic_drift_scanner.py
+    outputs:
+      perceptionSummary: artifacts/perception-summary.md
+      driftReport: artifacts/drift-report.json
+      affectedModules: artifacts/affected-modules.json
+    modelProfile: fast
+
+  reasoning:
+    id: reasoning
+    enabledOn:
+      pr: true
+      schedule: true
+      manual: true
+    scopeAllowed: [module, cluster, project]
+    inputs:
+      fromPerception:
+        - artifacts/drift-report.json
+        - artifacts/affected-modules.json
+      agentModes:
+        - .github/chatmodes/module-agent
+        - .github/chatmodes/cluster-agent
+        - .github/chatmodes/project-agent
+      modelMap: .github/model-map.yaml
+    outputs:
+      memo: artifacts/reasoning-memo.md
+      actionTasks: artifacts/action-tasklist.yaml
+    modelProfile: contextual
+
+  action:
+    id: action
+    enabledOn:
+      pr: false
+      schedule: true
+      manual: true
+    scopeAllowed: [module, cluster]
+    inputs:
+      prompts:
+        - .github/prompts/review-semantic-drift.prompt.md
+        - .github/prompts/validate-invariants.prompt.md
+      tasks: artifacts/action-tasklist.yaml
+    outputs:
+      patch: artifacts/proposed-changes.patch
+      changesetSummary: artifacts/changeset-summary.md
+      draftPR:
+        labels: [requires-steward, semantic-evolution]
+        titlePrefix: "[semantic-evolution]"
+    modelProfile: bounded
+
+  reflection:
+    id: reflection
+    enabledOn:
+      pr: true
+      schedule: true
+      manual: true
+    scopeAllowed: [module, cluster]
+    inputs:
+      fromAction:
+        - artifacts/changeset-summary.md
+      adrIndexScript: scripts/adr_index.py
+    outputs:
+      memoryLogTemplate:
+        frontMatter:
+          schemaVersion: 1.0
+          scope: <module|cluster>
+          id: <semantic-id>
+          date: <ISO-8601>
+          summary: <short-intent-summary>
+          changedContracts: []  # e.g., ["verify_token: added param allow_rotation"]
+          invariantsTouched: []
+          adrLinks: []
+          owners: []
+        pathPattern: data/semantic-memory/${scope}/${id}/${date}.md
+      proposedInstructionPatches: artifacts/semantic-instructions-patches.patch
+    modelProfile: reflective
+
+  verification:
+    id: verification
+    enabledOn:
+      pr: true
+      schedule: true
+      manual: true
+    scopeAllowed: [module, cluster, project]
+    inputs:
+      validator: scripts/semantic_validator.py
+      ciCheck: scripts/ci_check.ps1
+      postDriftCheck: scripts/semantic_drift_scanner.py
+    outputs:
+      report: artifacts/verification-report.md
+      checks:
+        - semantic-validation
+        - semantic-drift
+        - governance
+    modelProfile: none
+
+  evolution:
+    id: evolution
+    enabledOn:
+      pr: false
+      schedule: true
+      manual: true
+    scopeAllowed: [cluster, project]
+    inputs:
+      adrIndexScript: scripts/adr_index.py
+      semanticGraphScript: scripts/semantic_graph.py
+    outputs:
+      adrSuggestions: artifacts/adr-suggestions.md
+      graphDelta: artifacts/semantic-graph-delta.json
+      trendsDir: data/semantic-trends/
+    modelProfile: planning

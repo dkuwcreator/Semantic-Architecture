@@ -1,0 +1,48 @@
+name: adrIndex
+version: 0.1.0
+schemaVersion: 0.1
+description: Index ADR/decision records under docs for traceability. Read-only.
+owner: ["@dkuwcreator"]
+command:
+  exe: python
+  args: ["scripts/adr_index.py"]
+  useStdin: false
+  timeoutMs: 10000
+permissions:
+  network: false
+  write: false
+  paths:
+    allow: ["**/*"]
+argsSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  properties:
+    root: { type: string, default: "docs" }
+    patterns:
+      type: array
+      items: { type: string }
+      default: ["**/adr-*.md","**/ADR-*.md","**/decisions/*.md"]
+  additionalProperties: false
+outputSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  required: [records, meta]
+  properties:
+    records:
+      type: array
+      items:
+        type: object
+        required: [id, title, path]
+        properties:
+          id: { type: string }
+          title: { type: string }
+          date: { type: string }
+          status: { type: string }
+          path: { type: string }
+    meta:
+      type: object
+      properties:
+        generatedAt: { type: string }
+        count: { type: integer }
+notes: |
+  Safety: read-only indexing of local docs. No network.

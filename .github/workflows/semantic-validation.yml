@@ -1,0 +1,51 @@
+name: Semantic Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install prerequisites (none required)
+        run: echo "Using stdlib only"
+
+      - name: Run semantic validator (CI ruleset)
+        id: validator
+        run: |
+          python scripts/semantic_validator.py --ruleset ci --targets . --outputFormat json > validator.json
+          echo "result=$(jq -r '.summary.errors' validator.json)" >> $GITHUB_OUTPUT
+
+      - name: Run semantic drift scanner
+        id: drift
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          python scripts/semantic_drift_scanner.py --baseRef origin/${BASE_REF:-main} --headRef HEAD > drift.json
+          echo "count=$(jq -r '.summary.count' drift.json)" >> $GITHUB_OUTPUT
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: semantic-reports
+          path: |
+            validator.json
+            drift.json
+
+      - name: Fail on errors
+        run: |
+          ERRORS=$(jq -r '.summary.errors' validator.json)
+          if [ "$ERRORS" != "0" ]; then
+            echo "Semantic validation errors: $ERRORS" >&2
+            exit 1
+          fi
+          exit 0

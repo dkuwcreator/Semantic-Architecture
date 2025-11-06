@@ -1,0 +1,105 @@
+{
+  "modes": [
+    {
+      "id": "module-agent",
+      "name": "Module Agent",
+      "layer": "module",
+      "owners": ["@dkuwcreator"],
+      "description": "Operates within a single Semantic Module; bounded, intent-first changes.",
+      "version": "1.0.0",
+      "lastUpdated": "2025-11-06",
+      "prompts": [
+        "../prompts/module/scaffold-semantic-module.prompt.md",
+        "../prompts/module/review-semantic-drift.prompt.md",
+        "../prompts/module/validate-invariants.prompt.md"
+      ],
+      "references": {
+        "governance": "../../.github/copilot-instructions.md",
+        "vision": "../../docs/vision.md",
+        "projectModel": "../../docs/semantic-project-model.md",
+        "collaborationModel": "../../docs/semantic-collaboration-model.md",
+        "glossary": "../../docs/glossary.md"
+      }
+    },
+    {
+      "id": "cluster-steward",
+      "name": "Cluster Steward",
+      "layer": "cluster",
+      "owners": ["@dkuwcreator"],
+      "description": "Coordinates related modules within a cluster; per-module minimal patches.",
+      "version": "1.0.0",
+      "lastUpdated": "2025-11-06",
+      "prompts": [
+        "../prompts/cluster/review-semantic-drift.prompt.md",
+        "../prompts/cluster/semantic-diff.prompt.md"
+      ],
+      "references": {
+        "governance": "../../.github/copilot-instructions.md",
+        "vision": "../../docs/vision.md",
+        "projectModel": "../../docs/semantic-project-model.md",
+        "collaborationModel": "../../docs/semantic-collaboration-model.md",
+        "glossary": "../../docs/glossary.md"
+      }
+    },
+    {
+      "id": "project-architect",
+      "name": "Project Architect",
+      "layer": "project",
+      "owners": ["@dkuwcreator"],
+      "description": "Maintains cross-cluster coherence; plans and ADRs.",
+      "version": "1.0.0",
+      "lastUpdated": "2025-11-06",
+      "prompts": [
+        "../prompts/project/evolution-planning.prompt.md",
+        "../prompts/cluster/semantic-diff.prompt.md"
+      ],
+      "references": {
+        "governance": "../../.github/copilot-instructions.md",
+        "vision": "../../docs/vision.md",
+        "projectModel": "../../docs/semantic-project-model.md",
+        "collaborationModel": "../../docs/semantic-collaboration-model.md",
+        "glossary": "../../docs/glossary.md"
+      }
+    },
+    {
+      "id": "evolution-reviewer",
+      "name": "Evolution Reviewer",
+      "layer": "cluster-project",
+      "owners": ["@dkuwcreator"],
+      "description": "Intent-level reviews for plans and diffs.",
+      "version": "1.0.0",
+      "lastUpdated": "2025-11-06",
+      "prompts": [
+        "../prompts/project/evolution-planning.prompt.md",
+        "../prompts/cluster/semantic-diff.prompt.md"
+      ],
+      "references": {
+        "governance": "../../.github/copilot-instructions.md",
+        "vision": "../../docs/vision.md",
+        "projectModel": "../../docs/semantic-project-model.md",
+        "collaborationModel": "../../docs/semantic-collaboration-model.md",
+        "glossary": "../../docs/glossary.md"
+      }
+    },
+    {
+      "id": "semantic-maintenance-agent",
+      "name": "Semantic Maintenance Agent",
+      "layer": "project",
+      "owners": ["@dkuwcreator"],
+      "description": "Continuous drift detection and small fixes.",
+      "version": "1.0.0",
+      "lastUpdated": "2025-11-06",
+      "prompts": [
+        "../prompts/module/review-semantic-drift.prompt.md",
+        "../prompts/cluster/review-semantic-drift.prompt.md"
+      ],
+      "references": {
+        "governance": "../../.github/copilot-instructions.md",
+        "vision": "../../docs/vision.md",
+        "projectModel": "../../docs/semantic-project-model.md",
+        "collaborationModel": "../../docs/semantic-collaboration-model.md",
+        "glossary": "../../docs/glossary.md"
+      }
+    }
+  ]
+}

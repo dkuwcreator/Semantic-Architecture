@@ -1,0 +1,38 @@
+name: ciCheck
+version: 0.1.0
+schemaVersion: 0.1
+description: CI entrypoint to run semantic validations and drift scan; returns pass/fail counts. Read-only.
+owner: ["@dkuwcreator"]
+command:
+  exe: pwsh
+  args: ["-NoLogo","-NoProfile","-ExecutionPolicy","Bypass","-File","scripts/ci_check.ps1"]
+  useStdin: false
+  timeoutMs: 60000
+permissions:
+  network: false
+  write: false
+  paths:
+    allow: ["**/*"]
+argsSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  properties:
+    mode:
+      type: string
+      enum: [validate-all]
+      default: validate-all
+  additionalProperties: false
+outputSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  required: [result, counts]
+  properties:
+    result: { type: string, enum: [pass, fail] }
+    counts:
+      type: object
+      required: [errors, warnings]
+      properties:
+        errors: { type: integer }
+        warnings: { type: integer }
+notes: |
+  Safety: read-only; used in CI only. No network access.

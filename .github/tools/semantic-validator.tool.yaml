@@ -1,0 +1,89 @@
+name: semanticValidator
+version: 0.1.0
+schemaVersion: 0.1
+description: Validate semantic-instructions front matter, contracts, references, and tests. Produces diagnostics and suggested fixes. Read-only (suggestions only).
+owner: ["@dkuwcreator"]
+command:
+  exe: python
+  args: ["scripts/semantic_validator.py"]
+  useStdin: false
+  timeoutMs: 20000
+permissions:
+  network: false
+  write: false
+  paths:
+    allow: ["**/*"]
+argsSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  properties:
+    targets:
+      type: array
+      items: { type: string }
+    scope:
+      type: string
+      enum: [project, cluster, module]
+    ruleset:
+      type: string
+      enum: [default, strict, ci]
+      default: default
+    fixMode:
+      type: string
+      enum: [none, suggest]
+      default: suggest
+    outputFormat:
+      type: string
+      enum: [json]
+      default: json
+  additionalProperties: false
+outputSchema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  type: object
+  required: [diagnostics, summary, meta]
+  properties:
+    diagnostics:
+      type: array
+      items:
+        type: object
+        required: [severity, code, message, location]
+        properties:
+          severity: { type: string, enum: [error, warning, info] }
+          code: { type: string }
+          message: { type: string }
+          location:
+            type: object
+            required: [file]
+            properties:
+              file: { type: string }
+              startLine: { type: integer, minimum: 0 }
+              endLine: { type: integer, minimum: 0 }
+          related:
+            type: array
+            items:
+              type: object
+              properties:
+                file: { type: string }
+                message: { type: string }
+          suggestedFix:
+            type: object
+            properties:
+              patchFormat: { type: string, enum: [unified, git] }
+              patch: { type: string }
+    summary:
+      type: object
+      required: [errors, warnings, infos, ruleset]
+      properties:
+        errors: { type: integer }
+        warnings: { type: integer }
+        infos: { type: integer }
+        ruleset: { type: string }
+        scope: { type: string }
+    meta:
+      type: object
+      properties:
+        generatedAt: { type: string }
+        toolVersion: { type: string }
+        schemaVersion: { type: string }
+notes: |
+  Safety: returns suggestions only; never writes. Escalate invariant changes to owners.
+  Evolution Loop: Verification + Reflection — validates contracts and suggests doc updates.
