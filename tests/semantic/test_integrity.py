@@ -13,13 +13,13 @@ class TestSemanticConsistency:
     
     @pytest.mark.semantic
     def test_graph_nodes_have_valid_types(self, mock_semantic_graph_output):
-        """Test that all graph nodes have valid types."""
-        valid_types = ["module", "cluster", "project", "component", "service"]
+        """Test that all graph nodes have valid scopes."""
+        valid_scopes = ["module", "cluster", "project", "component", "service"]
         
         for node in mock_semantic_graph_output["nodes"]:
-            assert "type" in node
-            # In a real implementation, we'd enforce strict types
-            assert isinstance(node["type"], str)
+            assert "scope" in node
+            # In a real implementation, we'd enforce strict scopes
+            assert isinstance(node["scope"], str)
     
     @pytest.mark.semantic
     def test_graph_edges_reference_existing_nodes(self, mock_semantic_graph_output):
@@ -27,8 +27,8 @@ class TestSemanticConsistency:
         node_ids = {node["id"] for node in mock_semantic_graph_output["nodes"]}
         
         for edge in mock_semantic_graph_output["edges"]:
-            assert edge["source"] in node_ids, f"Source {edge['source']} not found in nodes"
-            assert edge["target"] in node_ids, f"Target {edge['target']} not found in nodes"
+            assert edge["from"] in node_ids, f"Source {edge['from']} not found in nodes"
+            assert edge["to"] in node_ids, f"Target {edge['to']} not found in nodes"
     
     @pytest.mark.semantic
     def test_validation_severity_levels_are_valid(self, mock_validation_output):
@@ -36,25 +36,26 @@ class TestSemanticConsistency:
         valid_levels = ["error", "warning", "info"]
         
         for diagnostic in mock_validation_output["diagnostics"]:
-            assert diagnostic["level"] in valid_levels
+            assert diagnostic["severity"] in valid_levels
     
     @pytest.mark.semantic
     def test_drift_alerts_have_required_fields(self, mock_drift_output):
         """Test that drift alerts contain all required fields."""
-        required_fields = ["severity", "category", "message"]
+        required_fields = ["code", "id", "type", "scope", "target", "message", "confidence"]
         
-        for alert in mock_drift_output["alerts"]:
+        for drift in mock_drift_output["drifts"]:
             for field in required_fields:
-                assert field in alert, f"Missing required field: {field}"
+                assert field in drift, f"Missing required field: {field}"
     
     @pytest.mark.semantic
     def test_adr_records_have_valid_status(self, mock_adr_output):
-        """Test that ADR records have valid status values."""
-        valid_statuses = ["proposed", "accepted", "rejected", "deprecated", "superseded"]
-        
+        """Test that ADR records exist."""
+        # Note: In the actual model, status is not required
+        # We just verify records exist and have required fields
         for record in mock_adr_output["records"]:
-            assert "status" in record
-            assert record["status"] in valid_statuses
+            assert "id" in record
+            assert "title" in record
+            assert "path" in record
 
 
 class TestDataIntegrity:
@@ -79,34 +80,34 @@ class TestDataIntegrity:
         summary = mock_validation_output["summary"]
         diagnostics = mock_validation_output["diagnostics"]
         
-        # Count diagnostics by level
-        error_count = sum(1 for d in diagnostics if d["level"] == "error")
-        warning_count = sum(1 for d in diagnostics if d["level"] == "warning")
+        # Count diagnostics by severity
+        error_count = sum(1 for d in diagnostics if d["severity"] == "error")
+        warning_count = sum(1 for d in diagnostics if d["severity"] == "warning")
         
         assert summary["errors"] == error_count
         assert summary["warnings"] == warning_count
     
     @pytest.mark.semantic
     def test_drift_summary_count_matches_alerts(self, mock_drift_output):
-        """Test that drift summary count matches number of alerts."""
+        """Test that drift summary count matches number of drifts."""
         summary = mock_drift_output["summary"]
-        alerts = mock_drift_output["alerts"]
+        drifts = mock_drift_output["drifts"]
         
-        assert summary["count"] == len(alerts)
+        assert summary["count"] == len(drifts)
     
     @pytest.mark.semantic
     def test_drift_category_counts_match(self, mock_drift_output):
-        """Test that drift category counts match actual alert categories."""
+        """Test that drift category counts match actual drift categories."""
         summary = mock_drift_output["summary"]
-        alerts = mock_drift_output["alerts"]
+        drifts = mock_drift_output["drifts"]
         
-        # Count alerts by category
-        category_counts = {}
-        for alert in alerts:
-            category = alert["category"]
-            category_counts[category] = category_counts.get(category, 0) + 1
+        # Count drifts by type
+        type_counts = {}
+        for drift in drifts:
+            drift_type = drift["type"]
+            type_counts[drift_type] = type_counts.get(drift_type, 0) + 1
         
-        assert summary["categoryCounts"] == category_counts
+        assert summary["byType"] == type_counts
 
 
 class TestCrossEnvironmentConsistency:
@@ -185,9 +186,9 @@ class TestEdgeCases:
         from mcp_server.models import SemanticGraph
         
         graph = SemanticGraph(
-            metadata={"scope": "empty"},
             nodes=[],
-            edges=[]
+            edges=[],
+            meta={"generatedAt": "2025-11-06T19:00:00Z"}
         )
         
         assert len(graph.nodes) == 0
@@ -199,13 +200,18 @@ class TestEdgeCases:
         from mcp_server.models import ValidationResult, ValidationSummary
         
         result = ValidationResult(
+            diagnostics=[],
             summary=ValidationSummary(
                 errors=0,
                 warnings=0,
-                fixableCount=0,
-                validated=5
+                infos=0,
+                ruleset="default"
             ),
-            diagnostics=[]
+            meta={
+                "generatedAt": "2025-11-06T19:00:00Z",
+                "toolVersion": "1.0.0",
+                "schemaVersion": "1"
+            }
         )
         
         assert result.summary.errors == 0
@@ -217,16 +223,23 @@ class TestEdgeCases:
         from mcp_server.models import DriftReport, DriftSummary
         
         report = DriftReport(
+            drifts=[],
             summary=DriftSummary(
                 count=0,
-                severity="info",
-                categoryCounts={}
+                byType={},
+                bySeverity={}
             ),
-            alerts=[]
+            diffSummary="",
+            meta={
+                "generatedAt": "2025-11-06T19:00:00Z",
+                "toolVersion": "1.0.0",
+                "baseRef": "origin/main",
+                "headRef": "HEAD"
+            }
         )
         
         assert report.summary.count == 0
-        assert len(report.alerts) == 0
+        assert len(report.drifts) == 0
     
     @pytest.mark.semantic
     def test_glossary_with_no_category(self, temp_repo_dir):
@@ -256,16 +269,16 @@ This term appears before any category heading.
         nodes = [
             SemanticNode(
                 id=f"node-{i}",
-                type="module",
+                scope="module",
                 name=f"Module {i}"
             )
             for i in range(100)
         ]
         
         graph = SemanticGraph(
-            metadata={"scope": "large"},
             nodes=nodes,
-            edges=[]
+            edges=[],
+            meta={"generatedAt": "2025-11-06T19:00:00Z"}
         )
         
         assert len(graph.nodes) == 100
@@ -275,29 +288,27 @@ This term appears before any category heading.
     
     @pytest.mark.semantic
     def test_deeply_nested_node_attributes(self):
-        """Test nodes with deeply nested attributes."""
+        """Test nodes with deeply nested attributes in meta."""
         from mcp_server.models import SemanticNode
         
         node = SemanticNode(
             id="complex-node",
-            type="module",
+            scope="module",
             name="Complex Module",
-            attributes={
-                "metadata": {
-                    "owner": "team",
-                    "tags": ["core", "critical"],
-                    "config": {
-                        "nested": {
-                            "deeply": {
-                                "value": 42
-                            }
+            meta={
+                "owner": "team",
+                "tags": ["core", "critical"],
+                "config": {
+                    "nested": {
+                        "deeply": {
+                            "value": 42
                         }
                     }
                 }
             }
         )
         
-        assert node.attributes["metadata"]["config"]["nested"]["deeply"]["value"] == 42
+        assert node.meta["config"]["nested"]["deeply"]["value"] == 42
 
 
 class TestErrorConditions:
@@ -309,11 +320,11 @@ class TestErrorConditions:
         from mcp_server.models import SemanticNode
         
         # Empty ID should be accepted by model but might fail validation
-        node = SemanticNode(id="", type="module", name="Empty ID")
+        node = SemanticNode(id="", scope="module", name="Empty ID")
         assert node.id == ""
         
         # Special characters in ID
-        node = SemanticNode(id="node-with-special-chars_123", type="module", name="Special")
+        node = SemanticNode(id="node-with-special-chars_123", scope="module", name="Special")
         assert "special-chars" in node.id
     
     @pytest.mark.semantic
@@ -328,15 +339,19 @@ class TestErrorConditions:
     
     @pytest.mark.semantic
     def test_invalid_severity_level(self):
-        """Test handling of invalid severity levels."""
+        """Test handling of values in drift alerts."""
         from mcp_server.models import DriftAlert
         
-        # Pydantic should accept any string, but we should validate in business logic
+        # Model should accept any string values for fields
         alert = DriftAlert(
-            severity="invalid",
-            category="test",
+            code="test-code",
+            id="alert-001",
+            type="test-type",
+            scope="module",
+            target={"id": "target-id", "path": "test.md"},
             message="Test alert",
-            file="test.md"
+            confidence=0.5
         )
         
-        assert alert.severity == "invalid"
+        assert alert.code == "test-code"
+        assert alert.confidence == 0.5

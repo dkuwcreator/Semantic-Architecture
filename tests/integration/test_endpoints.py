@@ -80,7 +80,7 @@ class TestSemanticGraphEndpoints:
             data = response.json()
             assert "nodes" in data
             assert "edges" in data
-            assert "metadata" in data
+            assert "meta" in data
     
     @pytest.mark.integration
     def test_get_semantic_graph_with_params(self, test_client):
@@ -188,7 +188,7 @@ class TestDriftEndpoints:
         if response.status_code == 200:
             data = response.json()
             assert "summary" in data
-            assert "alerts" in data
+            assert "drifts" in data
     
     @pytest.mark.integration
     def test_get_drift_with_refs(self, test_client):
@@ -292,7 +292,7 @@ class TestADREndpoints:
         
         if response.status_code == 200:
             data = response.json()
-            assert "count" in data
+            assert "meta" in data
             assert "records" in data
     
     @pytest.mark.integration
