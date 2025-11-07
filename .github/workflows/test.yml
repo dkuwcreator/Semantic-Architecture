@@ -103,8 +103,12 @@ jobs:
       
       # For private repositories, you must set the CODECOV_TOKEN secret in your repository settings.
       # See https://docs.codecov.com/docs/github-actions#using-private-repositories
+      
+      # For private repositories, you must set the CODECOV_TOKEN secret in your repository settings.
+      # See https://docs.codecov.com/docs/github-actions#using-private-repositories
       # This step will be skipped if CODECOV_TOKEN is not set.
       - name: Upload coverage to Codecov
+        if: env.CODECOV_TOKEN != ''
         if: env.CODECOV_TOKEN != ''
         uses: codecov/codecov-action@v4
         with:
