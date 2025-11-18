@@ -558,4 +558,4 @@ class TestSemanticNode:
 
 ## License
 
-This testing suite is part of the Semantic Architecture project and follows the same license.
+This testing suite is part of the Semantic Architecture project and is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
