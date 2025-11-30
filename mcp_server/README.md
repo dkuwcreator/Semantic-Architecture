@@ -231,7 +231,7 @@ When contributing to the MCP server:
 
 ## License
 
-[Same as parent repository]
+This MCP server is part of the Semantic Architecture project and is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
 
 ## References
 

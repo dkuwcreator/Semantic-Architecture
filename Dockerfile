@@ -44,13 +44,32 @@ FROM base as development
 
 USER root
 
-# Install development dependencies
-RUN pip install --no-cache-dir pytest pytest-asyncio httpx
+# Copy and install development dependencies
+COPY requirements-dev.txt .
+RUN pip install --no-cache-dir -r requirements-dev.txt
 
 USER mcpuser
 
 # Override CMD for development with reload
 CMD ["uvicorn", "mcp_server.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+
+# Testing stage with full test suite
+FROM development as testing
+
+USER root
+
+# Copy test files
+COPY tests/ ./tests/
+COPY pytest.ini .
+
+# Ensure proper permissions
+RUN chown -R mcpuser:mcpuser /app
+
+USER mcpuser
+
+# Run tests by default
+CMD ["pytest", "-v", "--tb=short"]
 
 
 # Production stage (optimized)
