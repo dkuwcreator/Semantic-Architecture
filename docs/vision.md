@@ -74,7 +74,7 @@ It’s not just code — it’s a **cohesive, documented, and interpretable unit
 
 * executable logic,
 * local tests, and
-* self-describing documentation (`about.md` + `semantic-instructions.md`).
+* self-describing documentation (`README.md` + `AGENT_INSTRUCTION.md`).
 
 Its defining property is **bounded cognition** — it’s small enough for one human or AI agent to fully understand and reason about in isolation.
 
@@ -166,7 +166,7 @@ Because every layer of the Semantic Architecture is self-describing, it can also
 Periodic “Semantic Maintenance Agents” can:
 
 * Scan all modules for drift between code and documentation.
-* Update `semantic-instructions.md` automatically when functions change.
+* Update `AGENT_INSTRUCTION.md` automatically when functions change.
 * Split large modules into smaller ones when cognitive scope grows.
 
 The result is a living, evolving system — one that preserves its meaning over time.
@@ -234,8 +234,8 @@ System Architect ←→ Cluster Agent ←→ Semantic Cluster
 
 Each Semantic Module contains:
 - **Code**: Executable implementation
-- **about.md**: Human-readable context and usage
-- **semantic-instructions.md**: AI-readable contracts and rules
+- **README.md**: Human-readable context and usage
+- **AGENT_INSTRUCTION.md**: AI-readable contracts and rules
 - **Tests**: Validation and behavioral verification
 
 These elements form a **Knowledge Cell** — a self-contained, self-describing unit that can be understood and modified in isolation.
@@ -251,7 +251,7 @@ This vision is operationalized through two companion documents:
 
 **Key Topics:**
 - Three-layer hierarchical structure
-- YAML front matter schema for `semantic-instructions.md`
+- YAML front matter schema for `AGENT_INSTRUCTION.md`
 - Documentation roles and requirements
 - Cognitive principles and boundaries
 

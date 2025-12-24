@@ -11,11 +11,26 @@ The **Semantic Architecture** is a comprehensive framework for designing softwar
 
 This repository contains the complete documentation suite for the Semantic Architecture framework.
 
+## Start here
+
+- **Normative core spec (MUST/SHOULD/MAY)**: [docs/core-spec.md](docs/core-spec.md)
+- **Core docs (supporting, must not contradict the core spec)**:
+	- [docs/vision.md](docs/vision.md)
+	- [docs/semantic-project-model.md](docs/semantic-project-model.md)
+	- [docs/semantic-collaboration-model.md](docs/semantic-collaboration-model.md)
+	- [docs/glossary.md](docs/glossary.md)
+- **Templates**: [templates/](templates/)
+- **Examples**: [examples/](examples/)
+- **Adapters (NON-NORMATIVE tooling guidance)**: [adapters/](adapters/)
+
 ---
 
 ## 📚 Documentation Structure
 
-The framework consists of four core documents, each serving a distinct purpose:
+The framework includes a normative core spec plus supporting documents:
+
+### 0. [Core Specification (Normative)](docs/core-spec.md)
+**The "Rules"** — MUST/SHOULD/MAY requirements for the core model, meaning artifacts, escalation, and drift handling.
 
 ### 1. [Vision: Semantic Architecture](docs/vision.md)
 **The "Why"** — Philosophical foundation and long-term vision
@@ -132,9 +147,9 @@ The Semantic Architecture supports integration with:
 
 See [Semantic Project Model: Tooling Integration](docs/semantic-project-model.md#81-semantic-tooling-integration) for details.
 
-### 🌐 MCP Server (NEW)
+### 🌐 MCP Server (Tooling / Implementation)
 
-The **Semantic Architecture MCP Server** transforms this framework into a live semantic context provider:
+The **Semantic Architecture MCP Server** is an implementation/tooling component that exposes semantic context and validation as APIs. It is optional and does not define the core model.
 
 - **Live Semantic Context**: Real-time access to project structure, validation, and drift detection
 - **API Endpoints**: RESTful APIs for semantic graph, validation, glossary, and ADRs

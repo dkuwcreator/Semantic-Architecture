@@ -41,7 +41,7 @@ This document operationalizes the Phase 7 governance charter with detailed role 
 
 - Scope: One module (Knowledge Cell).
 - Primary duties:
-  - Keep `about.md` and `semantic-instructions.md` synchronized with code.
+  - Keep `README.md` and `AGENT_INSTRUCTION.md` synchronized with code.
   - Ensure tests validate declared invariants; fix drift within one cycle.
   - Attach reflection logs to changes; maintain reflection coverage and latency.
 - SLAs: Triage `requires-steward(module:<id>)` ≤ 1 business day.

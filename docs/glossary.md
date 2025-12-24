@@ -42,18 +42,30 @@ The practice of keeping code, tests, and documentation together in the same loca
 
 ## Documentation
 
-### about.md
-Human-facing documentation file present at each layer (Project, Cluster, Module). Provides overview, purpose, usage examples, and contextual information for developers and reviewers.
+### Core Specification (Normative)
+The normative rules for Semantic Architecture. Uses MUST/SHOULD/MAY language and defines the core model, required meaning artifacts, escalation, and drift handling.
 
-### semantic-instructions.md
-Machine-oriented documentation file present at each layer. Describes purpose, inputs, outputs, modification rules, validation steps, and behavioral contracts for AI agents and automation systems. Includes YAML front matter for structured metadata.
+Primary location: `docs/core-spec.md`.
+
+### README.md
+Human-facing documentation file present at each layer (Project, Cluster, Module). Provides overview, purpose, usage examples, context, and constraints for developers and reviewers.
+
+### AGENT_INSTRUCTION.md
+Machine-oriented instruction file present at each layer. Describes scope boundaries, allowed changes, guardrails, validation steps, and behavioral contracts for AI agents and automation systems.
+
+### Legacy file names (compatibility)
+
+Some documents may refer to older names:
+
+- `about.md` → `README.md`
+- `semantic-instructions.md` → `AGENT_INSTRUCTION.md`
 
 ---
 
 ## Behavioral Concepts
 
 ### Semantic Contract
-An explicit declaration of the invariants, expectations, and behavioral guarantees that a module or cluster maintains. Defined in the YAML front matter of `semantic-instructions.md`.
+An explicit declaration of the invariants, expectations, and behavioral guarantees that a module or cluster maintains. Defined in the YAML front matter of `AGENT_INSTRUCTION.md`.
 
 ### Semantic Gravity
 A measure of a module's or cluster's cognitive complexity. Low gravity indicates easy reasoning with few dependencies; high gravity suggests the need to split into smaller units. Used to assess when components have outgrown their cognitive scope.
@@ -103,7 +115,7 @@ A representation of the entire project as a network where nodes are Semantic Mod
 A lightweight change history maintained within modules that informs future reasoning. Records significant modifications and their rationale, helping AI agents understand design evolution.
 
 ### Semantic Diff
-A review approach that compares intended behavior (from `semantic-instructions.md`) with implemented behavior (from code), allowing reasoning at the intent level rather than just syntax.
+A review approach that compares intended behavior (from `AGENT_INSTRUCTION.md`) with implemented behavior (from code), allowing reasoning at the intent level rather than just syntax.
 
 ### Semantic Commit Protocol
 A convention for commit messages that includes semantic context: `[cluster-name/module-name] <summary>`. Embeds hierarchy awareness into version history.
