@@ -1,81 +1,37 @@
-# Multi-stage Dockerfile for Semantic Architecture MCP Server
+# Multi-stage Dockerfile for Semantic Architecture tooling + tests (non-server)
 FROM python:3.12-slim as base
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY mcp_server/ ./mcp_server/
 COPY scripts/ ./scripts/
 COPY docs/ ./docs/
 COPY data/ ./data/
 COPY .github/ ./.github/
 
-# Create non-root user for security
-RUN useradd -m -u 1000 mcpuser && \
-    chown -R mcpuser:mcpuser /app
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
 
-USER mcpuser
-
-# Expose port
-EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
-
-# Run the application
-CMD ["uvicorn", "mcp_server.main:app", "--host", "0.0.0.0", "--port", "8000"]
+USER appuser
 
 
-# Development stage with hot-reload
-FROM base as development
+FROM base as testing
 
 USER root
 
-# Copy and install development dependencies
 COPY requirements-dev.txt .
 RUN pip install --no-cache-dir -r requirements-dev.txt
 
-USER mcpuser
-
-# Override CMD for development with reload
-CMD ["uvicorn", "mcp_server.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-
-
-# Testing stage with full test suite
-FROM development as testing
-
-USER root
-
-# Copy test files
 COPY tests/ ./tests/
 COPY pytest.ini .
 
-# Ensure proper permissions
-RUN chown -R mcpuser:mcpuser /app
+RUN chown -R appuser:appuser /app
+USER appuser
 
-USER mcpuser
-
-# Run tests by default
 CMD ["pytest", "-v", "--tb=short"]
-
-
-# Production stage (optimized)
-FROM base as production
-
-USER mcpuser
-
-# Use multiple workers in production
-CMD ["uvicorn", "mcp_server.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]

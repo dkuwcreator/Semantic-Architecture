@@ -5,6 +5,8 @@
 **Companion to:** *Semantic Project Model*
 **Purpose:** Define how humans and AI agents collaborate within the Semantic Project Model to maintain, evolve, and reason about software systems.
 
+> Note: The normative rules for Semantic Architecture live in [docs/core-spec.md](core-spec.md). This document is a supporting deep dive and must not contradict the core spec.
+
 ---
 
 ## 1. Overview
@@ -27,8 +29,8 @@ Semantic Modules are designed for **shared cognition** — where humans and AI s
 They do this by co-locating:
 
 * the **code** (behavior),
-* the **instructions** (`semantic-instructions.md`), and
-* the **explanation** (`about.md`)
+* the **instructions** (`AGENT_INSTRUCTION.md`), and
+* the **explanation** (`README.md`)
 
 This unified context ensures that changes are **interpretable** and **reversible**, preserving meaning across human and machine contributions.
 
@@ -98,12 +100,12 @@ When gravity increases beyond comprehension, the module should be **split** into
 
 Introduce automated validation tools to enforce structure and meaning:
 
-* Ensure all modules contain `about.md` and `semantic-instructions.md`.
+* Ensure all modules contain `README.md` and `AGENT_INSTRUCTION.md`.
 * Check for consistency between documented and actual function names.
 * Detect semantic drift between documentation and implementation.
-* Validate references in `semantic-instructions.md` against existing modules.
+* Validate references in `AGENT_INSTRUCTION.md` against existing modules.
 
-These validators operate on the YAML front matter schema defined in the [Semantic Project Model](semantic-project-model.md#semantic-instructionsmd-format).
+These validators operate on the YAML front matter schema defined in the [Semantic Project Model](semantic-project-model.md#agent_instructionmd-format).
 
 **Purpose:** Keep semantics synchronized with code automatically.
 
@@ -122,7 +124,7 @@ This enables:
 * Impact assessment for changes,
 * Smarter AI agent reasoning based on relational context.
 
-You can derive this graph directly from `semantic-instructions.md` references.
+You can derive this graph directly from `AGENT_INSTRUCTION.md` references.
 
 For details on graph construction from YAML metadata, see [Semantic Project Model: Semantic Tooling Integration](semantic-project-model.md#81-semantic-tooling-integration).
 
@@ -149,7 +151,7 @@ AI agents use this to learn patterns of past changes and understand design evolu
 Replace traditional line-based reviews with **semantic reviews**.
 AI agents (or humans) compare:
 
-* what was *intended* (from `semantic-instructions.md`), and
+* what was *intended* (from `AGENT_INSTRUCTION.md`), and
 * what was *implemented* (from the code).
 
 Semantic diff tools can summarize changes in terms of *capability*, *intent*, or *scope*, e.g.:
@@ -183,7 +185,7 @@ Impact: Low (backward compatible, default behavior unchanged)
 Validation: test_jwt_tools.py::test_rotation (PASS)
 ```
 
-The semantic diff references the module's YAML metadata (from [Semantic Project Model](semantic-project-model.md#semantic-instructionsmd-format)) to provide context-aware change summaries.
+The semantic diff references the module's YAML metadata (from [Semantic Project Model](semantic-project-model.md#agent_instructionmd-format)) to provide context-aware change summaries.
 
 ---
 
@@ -206,7 +208,7 @@ Each role operates within the **smallest possible context** that contains the ch
 The collaboration between humans and AI agents follows the **Semantic Evolution Loop** — a continuous cycle that ensures changes preserve meaning while enabling evolution:
 
 **1. Perception:**
-Agent reads local context — `about.md`, `semantic-instructions.md`, code, and tests.
+Agent reads local context — `README.md`, `AGENT_INSTRUCTION.md`, code, and tests.
 
 **2. Reasoning:**
 Determines the change required, infers implications, and assesses Semantic Gravity.
@@ -215,7 +217,7 @@ Determines the change required, infers implications, and assesses Semantic Gravi
 Modifies code while preserving documentation and structure.
 
 **4. Reflection:**
-Updates `semantic-instructions.md` and tests to reflect new behavior.
+Updates `AGENT_INSTRUCTION.md` and tests to reflect new behavior.
 
 **5. Verification:**
 Runs tests and semantic validation tools (see Section 3.1).
@@ -357,7 +359,7 @@ This document is part of the Semantic Architecture framework:
 
 **Key Topics:**
 - Three-layer structure (Project → Cluster → Module)
-- YAML front matter schema for `semantic-instructions.md`
+- YAML front matter schema for `AGENT_INSTRUCTION.md`
 - Semantic Contract definitions
 - Cognitive boundaries and principles
 - Semantic Tooling Integration specifications

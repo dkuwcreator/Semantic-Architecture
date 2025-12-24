@@ -1,6 +1,6 @@
-# Semantic Architecture MCP Server - Testing Suite
+# Semantic Architecture - Testing Suite (Non-Server)
 
-This directory contains a comprehensive testing suite for the Semantic Architecture MCP Server, designed to work cross-platform on Linux, macOS, and Windows.
+This directory contains a comprehensive, cross-platform testing suite for the Semantic Architecture repository (documentation + non-server scripts).
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ This directory contains a comprehensive testing suite for the Semantic Architect
 The testing suite includes:
 
 - **Unit Tests**: Fast, isolated tests for individual components (models, adapters, utilities)
-- **Integration Tests**: Tests for FastAPI endpoints and service integration
+- **Integration Tests**: Script-based checks that validate end-to-end behavior without starting a server
 - **Semantic Integrity Tests**: Tests for semantic consistency, data integrity, and cross-environment behavior
 
 All tests are designed to run consistently across Linux, macOS, and Windows environments, both locally and in Docker containers.
@@ -33,11 +33,11 @@ tests/
 ├── conftest.py                    # Shared fixtures and configuration
 ├── unit/                          # Unit tests (fast, isolated)
 │   ├── __init__.py
-│   ├── test_models.py            # Tests for Pydantic models
-│   └── test_filesystem_adapter.py # Tests for FilesystemAdapter
+│   ├── test_models.py            # Script JSON/schema/output tests
+│   └── test_filesystem_adapter.py # Filesystem-related behavior tests
 ├── integration/                   # Integration tests
 │   ├── __init__.py
-│   └── test_endpoints.py         # Tests for FastAPI endpoints
+│   └── test_endpoints.py         # Script-based integration checks
 └── semantic/                      # Semantic integrity tests
     ├── __init__.py
     └── test_integrity.py         # Semantic consistency tests
@@ -170,7 +170,7 @@ pytest tests/semantic -v -m semantic
 
 ```bash
 # Generate coverage report
-pytest --cov=mcp_server --cov-report=term-missing --cov-report=html
+pytest --cov=scripts --cov-report=term-missing:skip-covered --cov-report=html
 
 # View HTML report (opens in browser)
 # Linux/macOS
@@ -231,20 +231,12 @@ pytest -vv --tb=long
 # Unit tests in Docker
 ./run-tests-docker.sh unit
 
-# Integration tests (with server)
+# Integration tests
 ./run-tests-docker.sh integration
 
 # Run with coverage
 ./run-tests-docker.sh coverage
 ```
-
-### Start MCP Server for Manual Testing
-
-```bash
-./run-tests-docker.sh server
-```
-
-The server will be available at `http://localhost:8000`. Access API documentation at `http://localhost:8000/docs`.
 
 ### Clean Up Docker Resources
 
@@ -353,7 +345,7 @@ Fast, isolated tests that verify individual components without external dependen
 **Markers**: `@pytest.mark.unit`
 
 **What's tested**:
-- Pydantic model validation and serialization
+- Script output shape (JSON) and basic invariants
 - FilesystemAdapter functionality
 - Utility functions
 - Security features (path traversal prevention, input sanitization)
@@ -365,16 +357,14 @@ pytest tests/unit -v -m unit
 
 ### Integration Tests (`tests/integration/`)
 
-Tests that verify the FastAPI application endpoints and service integration.
+Tests that verify end-to-end behavior by running repo scripts without starting a server.
 
 **Markers**: `@pytest.mark.integration`
 
 **What's tested**:
-- All HTTP endpoints (GET/POST)
-- Request/response handling
-- Error handling and status codes
-- CORS configuration
-- OpenAPI documentation
+- Script CLI behavior and exit codes
+- JSON output contracts (presence of expected keys/types)
+- Basic integration across modules/data files
 
 **Run with**:
 ```bash
@@ -430,15 +420,12 @@ Tests run automatically on:
 
 #### 1. Import Errors
 
-**Problem**: `ModuleNotFoundError: No module named 'mcp_server'`
+**Problem**: `ModuleNotFoundError` (often caused by running tests outside the repository root)
 
 **Solution**:
 ```bash
 # Ensure you're in the repository root
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-
-# Or reinstall in development mode
-pip install -e .
 ```
 
 #### 2. Permission Denied (Linux/macOS)
@@ -518,28 +505,27 @@ pytest -m "not integration"
 
 ```python
 import pytest
-from mcp_server.models import SemanticNode
+from tests.helpers.script_runner import run_script
 
-class TestSemanticNode:
-    """Test SemanticNode model."""
+class TestSemanticValidator:
+   """Basic non-server workflow test."""
     
     @pytest.mark.unit
-    def test_valid_semantic_node(self):
-        """Test creating a valid semantic node."""
-        node = SemanticNode(
-            id="test-node",
-            scope="module",
-            name="Test Module"
-        )
-        assert node.id == "test-node"
-        assert node.scope == "module"
+   def test_outputs_json(self):
+      result = run_script(
+         "semantic_validator.py",
+         args=["--targets", ".", "--outputFormat", "json"],
+         expect_json=True,
+      )
+      assert result.exit_code == 0
+      assert isinstance(result.parsed_json, dict)
 ```
 
 ## Coverage Goals
 
 - **Overall**: Target 80%+ code coverage
 - **Unit Tests**: 90%+ coverage of core logic
-- **Integration Tests**: 80%+ coverage of endpoints
+- **Integration Tests**: 80%+ coverage of end-to-end script behavior
 - **Critical Paths**: 100% coverage of security-related code
 
 ## Performance Benchmarks
@@ -552,7 +538,7 @@ class TestSemanticNode:
 ## Additional Resources
 
 - [pytest Documentation](https://docs.pytest.org/)
-- [FastAPI Testing](https://fastapi.tiangolo.com/tutorial/testing/)
+- [pytest-cov Documentation](https://pytest-cov.readthedocs.io/)
 - [Docker Testing Best Practices](https://docs.docker.com/develop/dev-best-practices/)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 

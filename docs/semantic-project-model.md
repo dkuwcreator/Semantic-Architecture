@@ -5,6 +5,8 @@
 **Author:** [Your Team or Organization]
 **Purpose:** Define the structure, semantics, and collaboration model for AI-cooperative software development.
 
+> Note: The normative rules for Semantic Architecture live in [docs/core-spec.md](core-spec.md). This document is a supporting deep dive and must not contradict the core spec.
+
 ---
 
 ## 1. Introduction
@@ -44,9 +46,9 @@ The Semantic Project Model defines three conceptual layers:
 
 | Level                | Purpose                                               | Scope                  | Primary Documentation                       |
 | -------------------- | ----------------------------------------------------- | ---------------------- | ------------------------------------------- |
-| **Project**          | The complete software system or application           | Repository root        | `about.md`, `semantic-instructions.md`      |
-| **Semantic Cluster** | A cohesive grouping of related functionality          | Subdomain or subsystem | `about.md`, `semantic-instructions.md`      |
-| **Semantic Module**  | The smallest, self-contained unit of code and meaning | File set               | `about.md`, `semantic-instructions.md`      |
+| **Project**          | The complete software system or application           | Repository root        | `README.md`, `AGENT_INSTRUCTION.md`         |
+| **Semantic Cluster** | A cohesive grouping of related functionality          | Subdomain or subsystem | `README.md`, `AGENT_INSTRUCTION.md`         |
+| **Semantic Module**  | The smallest, self-contained unit of code and meaning | File set               | `README.md`, `AGENT_INSTRUCTION.md`         |
 
 Each layer is a **cognitive boundary** — a distinct level at which reasoning, modification, and validation can occur.
 
@@ -56,20 +58,20 @@ Each layer is a **cognitive boundary** — a distinct level at which reasoning, 
 ┌─────────────────────────────────────────────────────────┐
 │                   SEMANTIC PROJECT                      │
 │                  (Repository Root)                      │
-│   • about.md                                            │
-│   • semantic-instructions.md                            │
+│   • README.md                                           │
+│   • AGENT_INSTRUCTION.md                                │
 │                                                         │
 │   ┌──────────────────────┐   ┌──────────────────────┐  │
 │   │  SEMANTIC CLUSTER    │   │  SEMANTIC CLUSTER    │  │
 │   │  (Domain/Subsystem)  │   │  (Domain/Subsystem)  │  │
-│   │  • about.md          │   │  • about.md          │  │
-│   │  • semantic-inst...  │   │  • semantic-inst...  │  │
+│   │  • README.md         │   │  • README.md         │  │
+│   │  • AGENT_INSTR...    │   │  • AGENT_INSTR...    │  │
 │   │                      │   │                      │  │
 │   │  ┌──────────────┐    │   │  ┌──────────────┐    │  │
 │   │  │   MODULE     │    │   │  │   MODULE     │    │  │
 │   │  │  • code      │    │   │  │  • code      │    │  │
-│   │  │  • about.md  │    │   │  │  • about.md  │    │  │
-│   │  │  • sem-inst  │    │   │  │  • sem-inst  │    │  │
+│   │  │  • README.md │    │   │  │  • README.md │    │  │
+│   │  │  • AGENT...  │    │   │  │  • AGENT...  │    │  │
 │   │  │  • tests     │    │   │  │  • tests     │    │  │
 │   │  └──────────────┘    │   │  └──────────────┘    │  │
 │   │                      │   │                      │  │
@@ -95,24 +97,24 @@ It is typically represented by a repository.
 
 * Represents an independently maintainable deliverable.
 * Contains multiple **Semantic Clusters**.
-* Provides a system-level `semantic-instructions.md` to define goals, interactions, and external interfaces.
+* Provides a system-level `AGENT_INSTRUCTION.md` to define goals, interactions, and external interfaces.
 * May include configuration, shared resources, or deployment artifacts.
 
 ### Example Structure
 
 ```txt
 project-user-service/
-├── about.md
-├── semantic-instructions.md
+├── README.md
+├── AGENT_INSTRUCTION.md
 ├── cluster-auth/
-│   ├── about.md
-│   ├── semantic-instructions.md
+│   ├── README.md
+│   ├── AGENT_INSTRUCTION.md
 │   ├── jwt_tools.py
 │   ├── token_validator.py
 │   └── test_auth.py
 ├── cluster-storage/
-│   ├── about.md
-│   ├── semantic-instructions.md
+│   ├── README.md
+│   ├── AGENT_INSTRUCTION.md
 │   ├── blob_manager.py
 │   ├── cleanup_scheduler.py
 │   └── test_storage.py
@@ -131,7 +133,7 @@ A **Semantic Cluster** groups multiple **Semantic Modules** that together delive
 
 * Represents a **bounded domain** within a project.
 * Contains multiple Semantic Modules and optional shared resources.
-* Provides its own `semantic-instructions.md` describing:
+* Provides its own `AGENT_INSTRUCTION.md` describing:
 
   * The cluster’s purpose.
   * Relationships between modules.
@@ -142,8 +144,8 @@ A **Semantic Cluster** groups multiple **Semantic Modules** that together delive
 
 ```
 cluster-auth/
-├── about.md
-├── semantic-instructions.md
+├── README.md
+├── AGENT_INSTRUCTION.md
 ├── jwt_tools.py
 ├── token_validator.py
 ├── key_cache.py
@@ -170,10 +172,10 @@ It encapsulates **code, documentation, tests, and AI guidance** in one context.
 * Represents one clear concept, function, or feature.
 * Must include:
 
-  * `about.md` — human-readable purpose and usage (must be at module root).
-  * `semantic-instructions.md` — AI-readable structure and behavioral contract (must be at module root).
+  * `README.md` — human-readable purpose, context, and constraints (must be at module root).
+  * `AGENT_INSTRUCTION.md` — AI-readable operating rules, boundaries, and contract (must be at module root).
 * May include additional scripts, configuration, or metadata.
-* May contain one level of subdirectories (e.g., `/module/docs/`, `/module/scripts/`) but no deeper nesting is permitted.
+* May contain subdirectories for organization (e.g., `/module/docs/`, `/module/scripts/`) as long as the module remains a single semantic scope.
 * All files within a module and its immediate subfolders must belong to the same semantic scope.
 * Should remain *small enough* that a human or AI agent can fully understand and reason about it in isolation.
 
@@ -188,14 +190,17 @@ It encapsulates **code, documentation, tests, and AI guidance** in one context.
 
 | File                       | Purpose                                                                                              | Target Audience               |
 | -------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `about.md`                 | Human-facing overview, usage examples, context                                                       | Developers, reviewers         |
-| `semantic-instructions.md` | Machine-oriented guide describing purpose, inputs, outputs, modification rules, and validation steps | AI agents, automation systems |
+| `README.md`                | Human-facing overview, usage examples, context, and constraints                                       | Developers, reviewers         |
+| `AGENT_INSTRUCTION.md`     | Machine-oriented guide describing purpose, boundaries, modification rules, and validation steps      | AI agents, automation systems |
 
 Both files are **semantic anchors** — they ensure that knowledge remains co-located with the implementation.
 
-### `semantic-instructions.md` Format
+**Compatibility note:** Some older materials may refer to `about.md` and `semantic-instructions.md`. In this
+project, the canonical names are `README.md` and `AGENT_INSTRUCTION.md`.
 
-Each `semantic-instructions.md` file should start with **YAML front matter** to declare scope and semantic metadata:
+### `AGENT_INSTRUCTION.md` Format
+
+Each `AGENT_INSTRUCTION.md` file MAY start with **YAML front matter** to declare scope and semantic metadata:
 
 ```markdown
 ---
@@ -258,7 +263,7 @@ Agents can perform modifications proportionate to their level of understanding w
 
 ## 8.1 Semantic Tooling Integration
 
-The YAML front matter in `semantic-instructions.md` serves as the foundation for powerful semantic tooling:
+The YAML front matter in `AGENT_INSTRUCTION.md` serves as the foundation for powerful semantic tooling:
 
 ### Semantic Graph Construction
 

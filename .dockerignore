@@ -49,11 +49,9 @@ Thumbs.db
 # Documentation (keep only essential docs)
 *.md
 !README.md
-!mcp_server/README.md
 !docs/*.md
 
 # Test files
-tests/
 *.test.py
 .pytest_cache/
 
@@ -64,6 +62,15 @@ tests/
 .local/
 *.log
 tmp/
+
+# Coverage / test artifacts
+htmlcov/
+coverage.xml
+.coverage
+test-results/
+
+# Env files
+.env*
 
 # Docker
 .dockerignore

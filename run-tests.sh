@@ -3,7 +3,7 @@
 
 set -e
 
-echo "=== Semantic Architecture MCP Server - Test Runner ==="
+echo "=== Semantic Architecture - Test Runner ==="
 echo ""
 
 # Colors for output
@@ -55,7 +55,7 @@ case "$TEST_TYPE" in
         ;;
     coverage)
         echo -e "${GREEN}Running all tests with coverage...${NC}"
-        pytest -v --tb=short --cov=mcp_server --cov-report=term-missing --cov-report=html
+        pytest -v --tb=short --cov=scripts --cov-report=term-missing --cov-report=html
         echo -e "${GREEN}Coverage report generated in htmlcov/index.html${NC}"
         ;;
     quick)
