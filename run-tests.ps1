@@ -5,7 +5,7 @@ param(
     [string]$TestType = "all"
 )
 
-Write-Host "=== Semantic Architecture MCP Server - Test Runner ===" -ForegroundColor Green
+Write-Host "=== Semantic Architecture - Test Runner ===" -ForegroundColor Green
 Write-Host ""
 
 # Check if Python is installed
@@ -49,7 +49,7 @@ switch ($TestType) {
     }
     "coverage" {
         Write-Host "Running all tests with coverage..." -ForegroundColor Green
-        pytest -v --tb=short --cov=mcp_server --cov-report=term-missing --cov-report=html
+        pytest -v --tb=short --cov=scripts --cov-report=term-missing --cov-report=html
         Write-Host "Coverage report generated in htmlcov\index.html" -ForegroundColor Green
     }
     "quick" {

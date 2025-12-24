@@ -1,40 +1,13 @@
-"""Pytest configuration and shared fixtures for Semantic Architecture MCP Server tests.
+"""Pytest configuration and shared fixtures for Semantic Architecture (non-server).
 
 This module provides common fixtures used across unit, integration, and semantic tests.
-It sets up test clients, mock data, and test environment configurations.
+It sets up mock data and temporary repository structures.
 """
 import os
 import pytest
 import tempfile
 from pathlib import Path
 from typing import Generator, Dict, Any
-from fastapi.testclient import TestClient
-from httpx import AsyncClient
-
-# Import the FastAPI app
-from mcp_server.main import app
-from mcp_server.adapters import FilesystemAdapter
-
-
-@pytest.fixture
-def test_client() -> TestClient:
-    """Provide a synchronous test client for FastAPI app.
-    
-    Returns:
-        TestClient: Synchronous test client for making requests
-    """
-    return TestClient(app)
-
-
-@pytest.fixture
-async def async_client() -> AsyncClient:
-    """Provide an asynchronous test client for FastAPI app.
-    
-    Returns:
-        AsyncClient: Asynchronous test client for making requests
-    """
-    async with AsyncClient(app=app, base_url="http://test") as client:
-        yield client
 
 
 @pytest.fixture
@@ -247,8 +220,8 @@ def mock_adr_output() -> Dict[str, Any]:
         "records": [
             {
                 "id": "ADR-001",
-                "title": "Use FastAPI for MCP Server",
-                "path": "docs/decisions/001-fastapi.md"
+                "title": "Remove MCP Server Deliverable",
+                "path": "docs/decisions/001-remove-mcp-server.md"
             },
             {
                 "id": "ADR-002",
@@ -263,19 +236,6 @@ def mock_adr_output() -> Dict[str, Any]:
     }
 
 
-@pytest.fixture
-def filesystem_adapter(temp_repo_dir: Path) -> FilesystemAdapter:
-    """Provide a FilesystemAdapter with a temporary repository.
-    
-    Args:
-        temp_repo_dir: Temporary repository directory
-        
-    Returns:
-        FilesystemAdapter: Configured adapter for testing
-    """
-    return FilesystemAdapter(repo_root=str(temp_repo_dir))
-
-
 @pytest.fixture(autouse=True)
 def reset_environment():
     """Reset environment variables before and after each test.
@@ -287,7 +247,6 @@ def reset_environment():
     
     # Set test environment variables
     os.environ["TESTING"] = "true"
-    os.environ["CORS_ALLOW_ALL"] = "false"
     
     yield
     

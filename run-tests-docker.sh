@@ -3,7 +3,7 @@
 
 set -e
 
-echo "=== Semantic Architecture MCP Server - Docker Test Runner ==="
+echo "=== Semantic Architecture - Docker Test Runner ==="
 echo ""
 
 # Colors for output
@@ -47,15 +47,11 @@ case "$TEST_TYPE" in
         ;;
     integration)
         echo -e "${GREEN}Running integration tests in Docker...${NC}"
-        $DOCKER_COMPOSE -f docker-compose.test.yml up --abort-on-container-exit integration-test
+        $DOCKER_COMPOSE -f docker-compose.test.yml run --rm test pytest tests/integration -v --tb=short -m integration
         ;;
     all)
         echo -e "${GREEN}Running all tests in Docker...${NC}"
         $DOCKER_COMPOSE -f docker-compose.test.yml run --rm test
-        ;;
-    server)
-        echo -e "${GREEN}Starting MCP server for testing...${NC}"
-        $DOCKER_COMPOSE -f docker-compose.test.yml up mcp-server
         ;;
     clean)
         echo -e "${YELLOW}Cleaning up Docker resources...${NC}"
@@ -64,12 +60,12 @@ case "$TEST_TYPE" in
         ;;
     coverage)
         echo -e "${GREEN}Running tests with coverage in Docker...${NC}"
-        $DOCKER_COMPOSE -f docker-compose.test.yml run --rm test pytest -v --tb=short --cov=mcp_server --cov-report=term-missing --cov-report=html:/app/htmlcov
+        $DOCKER_COMPOSE -f docker-compose.test.yml run --rm test pytest -v --tb=short --cov=scripts --cov-report=term-missing --cov-report=html:/app/htmlcov
         echo -e "${GREEN}Coverage report generated in htmlcov/index.html${NC}"
         ;;
     *)
         echo -e "${RED}Unknown test type: $TEST_TYPE${NC}"
-        echo "Usage: $0 [build|unit|integration|all|server|clean|coverage]"
+        echo "Usage: $0 [build|unit|integration|all|clean|coverage]"
         exit 1
         ;;
 esac

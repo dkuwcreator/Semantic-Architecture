@@ -147,41 +147,13 @@ The Semantic Architecture supports integration with:
 
 See [Semantic Project Model: Tooling Integration](docs/semantic-project-model.md#81-semantic-tooling-integration) for details.
 
-### 🌐 MCP Server (Tooling / Implementation)
+### Local Tooling (Non-Server)
 
-The **Semantic Architecture MCP Server** is an implementation/tooling component that exposes semantic context and validation as APIs. It is optional and does not define the core model.
-
-- **Live Semantic Context**: Real-time access to project structure, validation, and drift detection
-- **API Endpoints**: RESTful APIs for semantic graph, validation, glossary, and ADRs
-- **AI Integration**: Enables AI agents and tools to query semantic intelligence
-- **Cross-Platform**: Supports Linux, macOS, and Windows
-- **Deployment Ready**: Supports both local and Docker deployment
-
-**Quick Start:**
-
-**Linux/macOS:**
-```bash
-# Local deployment
-./start-local.sh
-
-# Docker deployment  
-./start-docker.sh dev
-```
-
-**Windows (PowerShell):**
-```powershell
-# Local deployment
-.\start-local.ps1
-
-# Docker deployment
-.\start-docker.ps1 dev
-```
+This repository does not ship a server runtime. It includes documentation plus supporting scripts for semantic validation/reporting.
 
 **Documentation:**
-- [Quick Start Guide](QUICKSTART.md) - Get started in 30 seconds
-- [MCP Server README](mcp_server/README.md) - API documentation and usage
-- [Deployment Guide](DEPLOYMENT.md) - Complete deployment instructions
-- [Testing Guide](tests/README.md) - Comprehensive testing documentation
+- [Quick Start Guide](QUICKSTART.md) - Run a non-server semantic workflow
+- [Testing Guide](tests/README.md) - Test workflow and structure
 
 ---
 
@@ -215,8 +187,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Project Model](docs/semantic-project-model.md) — What is it made of?
 - [Collaboration Model](docs/semantic-collaboration-model.md) — How do we use it?
 - [Glossary](docs/glossary.md) — What do these terms mean?
-- [MCP Server](mcp_server/README.md) — Live semantic context API
-- [Deployment Guide](DEPLOYMENT.md) — Deploy locally or with Docker
+- [Quick Start Guide](QUICKSTART.md) — Run a non-server workflow
 
 ---
 
